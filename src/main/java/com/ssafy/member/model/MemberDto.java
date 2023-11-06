@@ -1,7 +1,5 @@
 package com.ssafy.member.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,5 +26,6 @@ public class MemberDto {
 	private String emailId;
 	@NonNull
 	private String emailDomain;
+	private int role;
 	private String joinDate;
 }

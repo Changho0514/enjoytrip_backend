@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.config.Result;
 import com.ssafy.member.model.MemberDto;
 import com.ssafy.member.model.service.MemberService;
@@ -28,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/member")
 @CrossOrigin("*")
 @Api(tags = {"일반 회원"})
 public class MemberController {
@@ -43,31 +45,28 @@ public class MemberController {
 	}
 	
 	@ApiOperation(value = "아이디 체크", notes = "아이디 중복 확인.")
-	@GetMapping("/{userid}")
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@GetMapping("/idcheck/{userid}")
 	public ResponseEntity<?> idCheck(@PathVariable("userid") String userId) throws Exception {
-		logger.debug("idCheck userid : {}", userId);
 		try{
 			int cnt = memberService.idCheck(userId);
 			return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 		} catch(Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
 	}
 	
-	@ApiOperation(value = "회원등록", notes = "회원의 정보를 받아 처리.")
-	@PostMapping(value = "/join")
-	public ResponseEntity<?> userRegister(@RequestBody MemberDto memberDto) {
-		logger.debug("userRegister memberDto : {}", memberDto);
+	@ApiOperation(value = "회원가입", notes = "회원의 정보를 받아 처리.")
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@PostMapping(value = "/regist")
+	public ResponseEntity<?> register(@RequestBody MemberDto memberDto) {
 		try {
-			memberService.joinMember(memberDto);
-			List<MemberDto> list = memberService.listMember(null);
-			if(list != null && !list.isEmpty()) {
-				return new ResponseEntity<Result>(new Result("success", "Enrolled"), HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-			}
+			memberService.registMember(memberDto);
+			return new ResponseEntity<Result>(new Result("success", "회원가입 성공"), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
+			return new ResponseEntity<Result>(new Result("fail", "회원가입 실패"), HttpStatus.OK);
 		}
 	}
 	// TODO : session 사용 가능하면 로그인 바꾸기 
@@ -99,59 +98,66 @@ public class MemberController {
 //		}
 //	}
 	@ApiOperation(value = "로그인", notes = "로그인 정보를 받아 처리.")
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
 	@PostMapping("/login")
 	public ResponseEntity<?> login(Map<String, String> map) {
-		
 		try {
 			MemberDto memberDto = memberService.loginMember(map);
-			
 			if(memberDto != null) {
-				return new ResponseEntity<Result>(new Result("success", "login success"), HttpStatus.OK);
+				return new ResponseEntity<Result>(new Result("success", "로그인 성공"), HttpStatus.OK);
 			} else {
-				String msg = "아이디 또는 비밀번호 확인 후 다시 로그인하세요!";
-				return new ResponseEntity<Result>(new Result("fail", msg), HttpStatus.NOT_FOUND);
+				return new ResponseEntity<Result>(new Result("fail", "아이디나 비밀번호가 다릅니다"), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "로그인 실패"), HttpStatus.OK);
 		}
 	}
 	
 	@ApiOperation(value = "로그아웃", notes = "로그아웃 요청을 받아 처리.")
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(HttpSession session) {
 		try{
 			session.invalidate();
-			return new ResponseEntity<Result>(new Result("success", "logout success"), HttpStatus.OK);
+			return new ResponseEntity<Result>(new Result("success", "로그아웃 성공"), HttpStatus.OK);
 		}
 		catch(Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "로그아웃 실패"), HttpStatus.OK);
 		}
 	}
 	
+	@ApiOperation(value = "회원정보수정", notes = "회원정보를 수정합니다.")
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@PutMapping(value = "/modify")
+	public ResponseEntity<?> modify(@RequestBody MemberDto memberDto) {
+		try {
+			memberService.modifyMember(memberDto);
+			return new ResponseEntity<Result>(new Result("success", "회원정보수정 성공"), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "회원정보수정 실패"), HttpStatus.OK);
+		}
+	}
 	
 	@ApiOperation(value = "회원탈퇴", notes = "회원 탈퇴를 하여 회원 정보를 삭제합니다.")
 	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 			@ApiResponse(code = 500, message = "서버에러!!") })
-	@DeleteMapping(value = "/{userid}")
-	public ResponseEntity<?> userDelete(@PathVariable("userid") String userId) {
+	@DeleteMapping(value = "/delete/{userid}")
+	public ResponseEntity<?> delete(@PathVariable("userid") String userId) {
 		logger.debug("userDelete userid : {}", userId);
 		try {
 			MemberDto memberDto = memberService.getMember(userId);
 			if(memberDto != null) {
 				memberService.deleteMember(userId);
-				return new ResponseEntity<Result>(new Result("success", "Deleted"), HttpStatus.OK);
+				return new ResponseEntity<Result>(new Result("success", "회원탈퇴 성공"), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Result>(new Result("fail", "존재하지 않는 사용자입니다."), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "회원탈퇴 실패"), HttpStatus.OK);
 		}
-	}
-		
-	
-	private ResponseEntity<String> exceptionHandling(Exception e) {
-		e.printStackTrace();
-		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 }

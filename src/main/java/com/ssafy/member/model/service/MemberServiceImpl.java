@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.member.model.MemberDto;
 import com.ssafy.member.model.mapper.MemberMapper;
@@ -27,9 +27,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void joinMember(MemberDto memberDto) throws Exception {
+	public void registMember(MemberDto memberDto) throws Exception {
 		MemberMapper memberMapper = sqlSession.getMapper(MemberMapper.class);
-		sqlSession.getMapper(MemberMapper.class).joinMember(memberDto);
+		sqlSession.getMapper(MemberMapper.class).registMember(memberDto);
 	}
 
 	@Override
@@ -52,9 +52,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updateMember(MemberDto memberDto) throws Exception {
+	public void modifyMember(MemberDto memberDto) throws Exception {
 		MemberMapper memberMapper = sqlSession.getMapper(MemberMapper.class);
-		memberMapper.updateMember(memberDto);
+		memberMapper.modifyMember(memberDto);
 	}
 
 	@Override

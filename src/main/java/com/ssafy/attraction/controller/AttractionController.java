@@ -55,7 +55,6 @@ public class AttractionController {
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
 		}
-		
 	}
 
 }

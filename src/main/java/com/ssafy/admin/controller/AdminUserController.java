@@ -1,4 +1,4 @@
-package com.ssafy.member.controller;
+package com.ssafy.admin.controller;
 
 import java.util.List;
 
@@ -46,50 +46,40 @@ public class AdminUserController {
 	@ApiOperation(value = "회원목록", notes = "회원의 <big>전체 목록</big>을 반환해 줍니다.")
 	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 			@ApiResponse(code = 500, message = "서버에러!!") })
-	@GetMapping(value = "/user")
-	public ResponseEntity<?> userList() {
-		logger.debug("userList call");
+	@GetMapping(value = "/list")
+	public ResponseEntity<?> list() {
 		try {
 			List<MemberDto> list = memberService.listMember(null);
 			if(list != null && !list.isEmpty()) {
 				return new ResponseEntity<List<MemberDto>>(list, HttpStatus.OK);
-//				return new ResponseEntity<List<MemberDto>>(HttpStatus.NOT_FOUND);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 			}
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "회원목록 불러오기 실패"), HttpStatus.OK);
 		}
 		
 	}
 	
 	@ApiOperation(value = "회원등록", notes = "회원의 정보를 받아 처리.")
-	@PostMapping(value = "/user")
-	public ResponseEntity<?> userRegister(@RequestBody MemberDto memberDto) {
-		logger.debug("userRegister memberDto : {}", memberDto);
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@PostMapping(value = "/regist")
+	public ResponseEntity<?> regist(@RequestBody MemberDto memberDto) {
 		try {
-			memberService.joinMember(memberDto);
-			List<MemberDto> list = memberService.listMember(null);
-			if(list != null && !list.isEmpty()) {
-				return new ResponseEntity<Result>(new Result("success", "Enrolled"), HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-			}
+			memberService.registMember(memberDto);
+			return new ResponseEntity<Result>(new Result("success", "회원등록 성공"), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
+			return new ResponseEntity<Result>(new Result("fail", "회원등록 실패"), HttpStatus.OK);
 		}
 		
 	}
 	
 	@ApiOperation(value = "회원정보", notes = "회원한명에 대한 정보.")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "userid", value = "아이디", required = true, dataType = "String", paramType = "path")
-//			@ApiImplicitParam(name = "param1", value = "파라미터1", required = true, dataType = "String", paramType = "query"),
-//			@ApiImplicitParam(name = "param2", value = "파마미터2", required = false, dataType = "int", paramType = "query") 
-	})
-	@GetMapping(value = "/user/{userid}")
-	public ResponseEntity<?> userInfo(@PathVariable("userid") String userId) {
-		logger.debug("userInfo userid : {}", userId);
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@GetMapping(value = "/list/{userid}")
+	public ResponseEntity<?> getMember(@PathVariable("userid") String userId) {
 		try {
 			MemberDto memberDto = memberService.getMember(userId);
 			if(memberDto != null)
@@ -97,43 +87,27 @@ public class AdminUserController {
 			else
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "회원정보 가져오기 실패"), HttpStatus.OK);
 		}
 	}
 	
-	@ApiOperation(value = "회원정보수정", notes = "회원정보를 수정합니다.")
-	@PutMapping(value = "/user")
-	public ResponseEntity<?> userModify(@RequestBody MemberDto memberDto) {
-		logger.debug("userModify memberDto : {}", memberDto);
-		try {
-			memberService.updateMember(memberDto);
-			
-			return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
-		} catch (Exception e) {
-			return exceptionHandling(e);
-		}
-	}
 	// TODO: 로그인한 사용자(같은 세션일 때만) 삭제처리 
 	@ApiOperation(value = "회원정보삭제", notes = "회원정보를 삭제합니다.")
-	@DeleteMapping(value = "/user/{userid}")
-	public ResponseEntity<?> userDelete(@PathVariable("userid") String userId) {
-		logger.debug("userDelete userid : {}", userId);
+	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@DeleteMapping(value = "/delete/{userid}")
+	public ResponseEntity<?> delete(@PathVariable("userid") String userId) {
 		try {
 			MemberDto memberDto = memberService.getMember(userId);
 			if(memberDto != null) {
 				memberService.deleteMember(userId);
-				return new ResponseEntity<Result>(new Result("success", "Deleted"), HttpStatus.OK);
+				return new ResponseEntity<Result>(new Result("success", "회원삭제 성공"), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Result>(new Result("fail", "존재하지 않는 사용자입니다."), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return new ResponseEntity<Result>(new Result("fail", "회원삭제 실패"), HttpStatus.OK);
 		}
-	}
-
-	private ResponseEntity<String> exceptionHandling(Exception e) {
-		e.printStackTrace();
-		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
