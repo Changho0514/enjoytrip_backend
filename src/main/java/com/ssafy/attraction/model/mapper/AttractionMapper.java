@@ -10,10 +10,12 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
+import com.ssafy.attraction.model.GugunDto;
 
 @Mapper
 public interface AttractionMapper {
 	
 	List<AttractionInfoDto> attractionList(Map<String, Object> map) throws SQLException;
+	List<GugunDto> sidoList(int sidoCode) throws SQLException;
 
 }

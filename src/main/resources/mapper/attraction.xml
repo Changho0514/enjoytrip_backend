@@ -48,5 +48,11 @@
 		</where>
 		ORDER BY content_id
 	</select>
+	
+	<select id="sidoList" parameterType="int" resultMap="gugun">
+		SELECT gugun_code, gugun_name, sido_code
+		FROM gugun
+		WHERE sido_code = #{sidoCode}
+	</select>
 
 </mapper>

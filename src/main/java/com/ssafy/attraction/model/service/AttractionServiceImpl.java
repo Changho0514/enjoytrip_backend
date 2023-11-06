@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
+import com.ssafy.attraction.model.GugunDto;
 import com.ssafy.attraction.model.mapper.AttractionMapper;
 
 @Service
@@ -35,6 +36,12 @@ public class AttractionServiceImpl implements AttractionService {
 		
 		AttractionMapper attractionMapper = sqlSession.getMapper(AttractionMapper.class);
 		return attractionMapper.attractionList(map);
+	}
+
+	@Override
+	public List<GugunDto> sidoList(int sidoCode) throws Exception {
+		AttractionMapper attractionMapper = sqlSession.getMapper(AttractionMapper.class);
+		return attractionMapper.sidoList(sidoCode);
 	}
 
 }
