@@ -5,6 +5,7 @@
 <mapper namespace="com.ssafy.board.model.mapper.BoardMapper">
 
 	<resultMap type="BoardDto" id="board">
+		<result column="article_no" property="articleNo"/>
 		<result column="subject" property="subject"/>
 		<result column="user_id" property="userId"/>
 		<result column="content" property="content"/>
@@ -14,6 +15,33 @@
 		<result column="date" property="date"/>
 		<result column="isnotice" property="isnotice"/>
 	</resultMap>
+	
+	<select id="getBoard" parameterType="int" resultMap="board">
+		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
+		from board
+		where article_no = #{articleNo}
+	</select>
+	
+	<select id="list" resultMap="board">
+		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
+		from board
+	</select>
+	
+	<insert id="write" parameterType="boardDto">
+		insert into board (subject, user_id, content, date)
+		values (#{subject}, #{userId}, #{content}, now())
+	</insert>
+	
+	<update id="modify" parameterType="boardDto">
+		update board
+		set subject = #{subject}, content = #{content}
+		where article_no = #{articleNo}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from board
+		where article_no = #{articleNo}
+	</delete>
 
 	
 </mapper>
