@@ -2,54 +2,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.member.model.mapper.MemberMapper">
+<mapper namespace="com.ssafy.user.model.mapper.UserMapper">
 
-	<resultMap type="memberDto" id="member">
+	<resultMap type="userDto" id="user">
 		<result column="user_id" property="userId"/>
 		<result column="user_name" property="userName"/>
-	</resultMap>
-	
-	<!-- ADMIN -->
-	<resultMap type="memberDto" id="memberAll" extends="member">
 		<result column="user_password" property="userPwd"/>
 		<result column="email_id" property="emailId"/>
 		<result column="email_domain" property="emailDomain"/>
 		<result column="role" property="role"/>
+		<result column="flag" property="flag"/>
 		<result column="join_date" property="joinDate"/>
 	</resultMap>
 
 	<select id="idCheck" parameterType="String" resultType="int">
 		select count(user_id)
-		from members
+		from user
 		where user_id = #{userId}
 	</select>
 
-	<insert id="registMember" parameterType="memberDto">
-		insert into members (user_name, user_id, user_password, email_id, email_domain, join_date)
-		values (#{userName}, #{userId}, #{userPwd}, #{emailId}, #{emailDomain}, now())
+	<insert id="regist" parameterType="userDto">
+		insert into user (user_id, user_name, user_password, email_id, email_domain, join_date)
+		values (#{userId}, #{userName}, #{userPwd}, #{emailId}, #{emailDomain}, now())
 	</insert>
 
-	<select id="loginMember" parameterType="map" resultMap="member">
-		select user_id, user_name
-		from members
+	<select id="login" parameterType="userDto" resultMap="user">
+		select user_id, user_name, user_password, email_id, email_domain, roll, flag, join_date
+		from user
 		where user_id = #{userId} and user_password = #{userPwd}
 	</select>
 	
 	<!-- ADMIN -->
-	<select id="listMember" resultMap="memberAll">
-		select user_name, user_id, user_password, email_id, email_domain, roll, join_date
-		from members
+	<select id="list" resultMap="user">
+		select user_id, user_name, user_password, email_id, email_domain, roll, flag, join_date
+		from user
 		order by join_date
 	</select>
 	
-	<select id="getMember" parameterType="string" resultMap="memberAll">
-		select user_id, user_name, user_password, email_id, email_domain, roll, join_date
-		from members
+	<select id="getUser" parameterType="string" resultMap="user">
+		select user_id, user_name, user_password, email_id, email_domain, roll, flag, join_date
+		from user
 		where user_id = #{userId}
 	</select>
 	
-	<update id="modifyMember" parameterType="memberDto">
-		update members
+	<update id="modify" parameterType="userDto">
+		update user
 		<trim prefix="set" suffixOverrides=",">
 			<if test="userPwd != null">user_password = #{userPwd},</if>
 			<if test="emailId != null">email_id = #{emailId},</if>
@@ -58,8 +55,8 @@
 		where user_id = #{userId}
 	</update>
 	
-	<delete id="deleteMember" parameterType="String">
-		delete from members
+	<delete id="delete" parameterType="String">
+		delete from user
 		where user_id = #{userId}
 	</delete>
 	

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.board.model.mapper.BoardMapper">
+
+	<resultMap type="BoardDto" id="board">
+		<result column="subject" property="subject"/>
+		<result column="user_id" property="userId"/>
+		<result column="content" property="content"/>
+		<result column="hit" property="hit"/>
+		<result column="recommendation" property="recommendation"/>
+		<result column="comment" property="comment"/>
+		<result column="date" property="date"/>
+		<result column="isnotice" property="isnotice"/>
+	</resultMap>
+
+	
+</mapper>

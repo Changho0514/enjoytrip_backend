@@ -1,4 +1,4 @@
-package com.ssafy.member.controller;
+package com.ssafy.user.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.config.Result;
-import com.ssafy.member.model.MemberDto;
-import com.ssafy.member.model.service.MemberService;
+import com.ssafy.user.model.UserDto;
+import com.ssafy.user.model.service.UserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,15 +33,15 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/member")
 @CrossOrigin("*")
 @Api(tags = {"일반 회원"})
-public class MemberController {
+public class UserController {
 	
-	private final Logger logger = LoggerFactory.getLogger(MemberController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
-	private MemberService memberService;
+	private UserService userService;
 	
-	public MemberController(MemberService memberService) {
+	public UserController(UserService userService) {
 		super();
-		this.memberService = memberService;
+		this.userService = userService;
 	}
 	
 	@ApiOperation(value = "아이디 체크", notes = "아이디 중복 확인.")
@@ -50,7 +50,7 @@ public class MemberController {
 	@GetMapping("/idcheck/{userid}")
 	public ResponseEntity<?> idCheck(@PathVariable("userid") String userId) throws Exception {
 		try{
-			int cnt = memberService.idCheck(userId);
+			int cnt = userService.idCheck(userId);
 			return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 		} catch(Exception e) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -61,9 +61,9 @@ public class MemberController {
 	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 		@ApiResponse(code = 500, message = "서버에러!!") })
 	@PostMapping(value = "/regist")
-	public ResponseEntity<?> register(@RequestBody MemberDto memberDto) {
+	public ResponseEntity<?> regist(@RequestBody UserDto userDto) {
 		try {
-			memberService.registMember(memberDto);
+			userService.regist(userDto);
 			return new ResponseEntity<Result>(new Result("success", "회원가입 성공"), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "회원가입 실패"), HttpStatus.OK);
@@ -101,10 +101,10 @@ public class MemberController {
 	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 		@ApiResponse(code = 500, message = "서버에러!!") })
 	@PostMapping("/login")
-	public ResponseEntity<?> login(Map<String, String> map) {
+	public ResponseEntity<?> login(@RequestBody UserDto userDto) {
 		try {
-			MemberDto memberDto = memberService.loginMember(map);
-			if(memberDto != null) {
+			UserDto login = userService.login(userDto);
+			if(userDto != null) {
 				return new ResponseEntity<Result>(new Result("success", "로그인 성공"), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Result>(new Result("fail", "아이디나 비밀번호가 다릅니다"), HttpStatus.OK);
@@ -132,9 +132,9 @@ public class MemberController {
 	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 		@ApiResponse(code = 500, message = "서버에러!!") })
 	@PutMapping(value = "/modify")
-	public ResponseEntity<?> modify(@RequestBody MemberDto memberDto) {
+	public ResponseEntity<?> modify(@RequestBody UserDto userDto) {
 		try {
-			memberService.modifyMember(memberDto);
+			userService.modify(userDto);
 			return new ResponseEntity<Result>(new Result("success", "회원정보수정 성공"), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "회원정보수정 실패"), HttpStatus.OK);
@@ -146,11 +146,10 @@ public class MemberController {
 			@ApiResponse(code = 500, message = "서버에러!!") })
 	@DeleteMapping(value = "/delete/{userid}")
 	public ResponseEntity<?> delete(@PathVariable("userid") String userId) {
-		logger.debug("userDelete userid : {}", userId);
 		try {
-			MemberDto memberDto = memberService.getMember(userId);
-			if(memberDto != null) {
-				memberService.deleteMember(userId);
+			UserDto userDto = userService.getUser(userId);
+			if(userDto != null) {
+				userService.delete(userId);
 				return new ResponseEntity<Result>(new Result("success", "회원탈퇴 성공"), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Result>(new Result("fail", "존재하지 않는 사용자입니다."), HttpStatus.OK);

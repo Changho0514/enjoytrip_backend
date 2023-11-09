@@ -1,4 +1,4 @@
-package com.ssafy.member.model;
+package com.ssafy.board.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,21 +11,23 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @RequiredArgsConstructor
-public class MemberDto {
+public class BoardDto {
 	
+	@NonNull
+	private int articleNo;
 	@NonNull
 	private String userId;
 	@NonNull
-	private String userName;
+	private String subject;
 	@NonNull
-	private String userPwd;
-	@NonNull
-	private String emailId;
-	@NonNull
-	private String emailDomain;
-	private int role;
-	private String joinDate;
+	private String content;
+	private int hit;
+//	private int recommendation;
+	private int comment;
+	private String date;
+//	private int isnotice;
+
 }

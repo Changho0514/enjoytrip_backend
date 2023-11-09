@@ -14,11 +14,11 @@ import com.ssafy.attraction.model.mapper.AttractionMapper;
 @Service
 public class AttractionServiceImpl implements AttractionService {
 	
-	private SqlSession sqlSession;
+	private AttractionMapper attractionMapper;
 
-	public AttractionServiceImpl(SqlSession sqlSession) {
+	public AttractionServiceImpl(AttractionMapper attractionMapper) {
 		super();
-		this.sqlSession = sqlSession;
+		this.attractionMapper = attractionMapper;
 	}
 
 	@Override
@@ -31,16 +31,13 @@ public class AttractionServiceImpl implements AttractionService {
 		int contentTypeId = attractionInfoDto.getContentTypeId();
 		map.put("contentTypeId", contentTypeId);
 		String title = attractionInfoDto.getTitle();
-		System.out.println("##### title : "+title);
 		map.put("title", title==""?"":title);
 		
-		AttractionMapper attractionMapper = sqlSession.getMapper(AttractionMapper.class);
 		return attractionMapper.attractionList(map);
 	}
 
 	@Override
 	public List<GugunDto> sidoList(int sidoCode) throws Exception {
-		AttractionMapper attractionMapper = sqlSession.getMapper(AttractionMapper.class);
 		return attractionMapper.sidoList(sidoCode);
 	}
 
