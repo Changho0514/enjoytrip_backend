@@ -22,9 +22,24 @@
 		where article_no = #{articleNo}
 	</select>
 	
-	<select id="list" resultMap="board">
+	<sql id="search">
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				and subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				and ${key} = #{word}
+			</if>
+		</if>
+	</sql>
+	
+	<select id="list" resultMap="board" parameterType="boardParameterDto">
 		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
 		from board
+		<where>
+			<include refid="search"></include>
+		</where>
+		order by article_no desc
 	</select>
 	
 	<insert id="write" parameterType="boardDto">

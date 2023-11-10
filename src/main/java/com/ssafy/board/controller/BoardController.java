@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.board.model.BoardDto;
+import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.board.model.service.BoardService;
 import com.ssafy.config.Result;
-import com.ssafy.user.model.UserDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,11 +58,11 @@ public class BoardController {
 	}
 	
 	@ApiOperation(value = "글 목록 가져오기", notes = "게시판에 있는 모든 글의 목록 가져오기")
-	@GetMapping("/list")
-	public ResponseEntity<?> list() {
+	@PostMapping("/list")
+	public ResponseEntity<?> list(@RequestBody BoardParameterDto boardParameterDto) {
 		List<BoardDto> list;
 		try {
-			list = boardService.list();
+			list = boardService.list(boardParameterDto);
 			if(list != null && !list.isEmpty()) {
 				return new ResponseEntity<List<BoardDto>>(list, HttpStatus.OK);
 			} else {

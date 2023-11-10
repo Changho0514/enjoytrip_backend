@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.board.model.BoardDto;
+import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.board.model.mapper.BoardMapper;
 
 @Service
@@ -23,8 +24,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardDto> list() throws Exception {
-		return boardMapper.list();
+	public List<BoardDto> list(BoardParameterDto boardParameterDto) throws Exception {
+		return boardMapper.list(boardParameterDto);
 	}
 
 	@Override
