@@ -5,10 +5,12 @@ import java.util.Map;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.attraction.model.GugunDto;
+import com.ssafy.attraction.model.SidoDto;
 
 public interface AttractionService {
 	
 	List<AttractionInfoDto> attractionList(AttractionInfoDto attractionInfoDto) throws Exception;
-	List<GugunDto> sidoList(int sidoCode) throws Exception;
+	List<GugunDto> gugunList(int sidoCode) throws Exception;
+	List<SidoDto> sidoList() throws Exception;
 
 }

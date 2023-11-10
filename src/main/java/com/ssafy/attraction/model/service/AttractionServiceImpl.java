@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.attraction.model.GugunDto;
+import com.ssafy.attraction.model.SidoDto;
 import com.ssafy.attraction.model.mapper.AttractionMapper;
 
 @Service
@@ -37,8 +38,13 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<GugunDto> sidoList(int sidoCode) throws Exception {
-		return attractionMapper.sidoList(sidoCode);
+	public List<GugunDto> gugunList(int sidoCode) throws Exception {
+		return attractionMapper.gugunList(sidoCode);
+	}
+
+	@Override
+	public List<SidoDto> sidoList() throws Exception {
+		return attractionMapper.sidoList();
 	}
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.attraction.model.GugunDto;
+import com.ssafy.attraction.model.SidoDto;
 import com.ssafy.attraction.model.service.AttractionService;
 import com.ssafy.config.Result;
 
@@ -60,13 +61,13 @@ public class AttractionController {
 		}
 	}
 	
-	@ApiOperation(value = "시군구군 목록", notes = "시군에 따른 구군의 목록을 반환해줍니다")
+	@ApiOperation(value = "구군 목록", notes = "시군에 따른 구군의 목록을 반환해줍니다")
 	@ApiResponses({ @ApiResponse(code = 200, message = "OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
 		@ApiResponse(code = 500, message = "서버에러!!") })
-	@GetMapping(value="/sido/{sidoCode}")
-	public ResponseEntity<?> sidoList(@PathVariable("sidoCode") int sidoCode) {
+	@GetMapping(value="/gugun/{sidoCode}")
+	public ResponseEntity<?> gugunList(@PathVariable("sidoCode") int sidoCode) {
 		try {
-			List<GugunDto> list = attractionService.sidoList(sidoCode);
+			List<GugunDto> list = attractionService.gugunList(sidoCode);
 			if (list != null && !list.isEmpty()) {
 				return new ResponseEntity<List<GugunDto>>(list, HttpStatus.OK);
 			} else {
@@ -76,5 +77,21 @@ public class AttractionController {
 			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
 		}
 	}
-
+	
+	@ApiOperation(value = "시군목록", notes = "시군의 목록을 반환해줍니다")
+	@ApiResponses({ @ApiResponse(code = 200, message = "OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@GetMapping(value="/sido")
+	public ResponseEntity<?> sidoList() {
+		try {
+			List<SidoDto> list = attractionService.sidoList();
+			if (list != null && !list.isEmpty()) {
+				return new ResponseEntity<List<SidoDto>>(list, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
+		}
+	}
 }

@@ -28,6 +28,11 @@
 		<result column="sido_code" property="sidoCode"/>
 	</resultMap>
 	
+	<resultMap type="SidoDto" id="sido">
+		<result column="sido_code" property="sidoCode"/>
+		<result column="sido_name" property="sidoName"/>
+	</resultMap>
+	
 	<select id="attractionList" parameterType="map" resultMap="attractioninfo">
 		SELECT content_id, content_type_id, title, addr1, addr2,
 		zipcode, tel, first_image, first_image2, readcount, sido_code, gugun_code, latitude, longitude, mlevel
@@ -49,10 +54,15 @@
 		ORDER BY content_id
 	</select>
 	
-	<select id="sidoList" parameterType="int" resultMap="gugun">
+	<select id="gugunList" parameterType="int" resultMap="gugun">
 		SELECT gugun_code, gugun_name, sido_code
 		FROM gugun
 		WHERE sido_code = #{sidoCode}
+	</select>
+	
+	<select id="sidoList" resultMap="sido">
+		SELECT sido_code, sido_name
+		from sido
 	</select>
 
 </mapper>
