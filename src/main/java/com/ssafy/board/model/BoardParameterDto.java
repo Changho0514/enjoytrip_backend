@@ -14,7 +14,7 @@ import lombok.ToString;
 public class BoardParameterDto {
 	
 	private int pgno;
-	private String spp;
+	private int spp;
 	private String key;
 	private String word;
 

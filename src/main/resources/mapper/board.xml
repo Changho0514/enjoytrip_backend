@@ -33,13 +33,22 @@
 		</if>
 	</sql>
 	
-	<select id="list" resultMap="board" parameterType="boardParameterDto">
+	<select id="list" resultMap="board" parameterType="map">
 		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
 		from board
 		<where>
 			<include refid="search"></include>
 		</where>
 		order by article_no desc
+		limit #{start}, #{listsize}
+	</select>
+	
+	<select id="getTotalArticleCount" parameterType="map" resultType="int">
+		select count(article_no)
+		from board
+		<where>
+			<include refid="search"></include>
+		</where>
 	</select>
 	
 	<insert id="write" parameterType="boardDto">

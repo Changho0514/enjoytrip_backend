@@ -1,10 +1,13 @@
 package com.ssafy.board.controller;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.board.model.BoardDto;
+import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.board.model.service.BoardService;
 import com.ssafy.config.Result;
@@ -60,14 +64,11 @@ public class BoardController {
 	@ApiOperation(value = "글 목록 가져오기", notes = "게시판에 있는 모든 글의 목록 가져오기")
 	@PostMapping("/list")
 	public ResponseEntity<?> list(@RequestBody BoardParameterDto boardParameterDto) {
-		List<BoardDto> list;
 		try {
-			list = boardService.list(boardParameterDto);
-			if(list != null && !list.isEmpty()) {
-				return new ResponseEntity<List<BoardDto>>(list, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-			}
+			BoardListDto boardListDto = boardService.list(boardParameterDto);
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+			return ResponseEntity.ok().headers(header).body(boardListDto);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "글목록 가져오기 실패"), HttpStatus.OK);
 		}
