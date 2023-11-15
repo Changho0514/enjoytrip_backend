@@ -36,10 +36,8 @@
 	<select id="list" resultMap="board" parameterType="map">
 		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
 		from board
-		<where>
-			<include refid="search"></include>
-		</where>
 		order by article_no desc
+		<include refid="search"></include>
 		limit #{start}, #{listsize}
 	</select>
 	

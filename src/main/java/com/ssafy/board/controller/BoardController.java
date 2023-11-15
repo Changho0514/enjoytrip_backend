@@ -1,8 +1,8 @@
 package com.ssafy.board.controller;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
+import com.ssafy.board.model.BoardListDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.board.model.BoardDto;
-import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.board.model.service.BoardService;
 import com.ssafy.config.Result;

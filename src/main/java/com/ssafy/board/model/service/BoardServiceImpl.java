@@ -40,11 +40,10 @@ public class BoardServiceImpl implements BoardService {
 		param.put("key", key == null ? "" : key);
 		if ("user_id".equals(key))
 			param.put("key", key == null ? "" : "b.user_id");
+
+
 		List<BoardDto> list = boardMapper.list(param);
 
-//		if ("user_id".equals(key)) {
-//			param.put("key", key == null ? "" : "user_id");
-//		}
 		int totalArticleCount = boardMapper.getTotalArticleCount(param);
 		int totalPageCount = (totalArticleCount - 1) / sizePerPage + 1;
 
