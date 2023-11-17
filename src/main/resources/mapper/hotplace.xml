@@ -22,10 +22,6 @@
 	<insert id="write" parameterType="HotPlaceDto" useGeneratedKeys="true" keyProperty="hotplaceNo">
 		insert into hotplace (user_id, title, content, address, save_folder, original_file, save_file)
 		values (#{userId}, #{title}, #{content}, #{address}, #{saveFolder}, #{originalFile}, #{saveFile})
-		<selectKey resultType="int" keyProperty="aid"
-				   order="AFTER">
-			select last_insert_id()
-		</selectKey>
 	</insert>
 
 	<sql id="search">
@@ -41,18 +37,18 @@
 	</sql>
 
 	<select id="hotplaceList" parameterType="map" resultMap="hotplace">
-		select h.hotplace_no, h.user_id, h.title, h.content, h.address, h.recommendation, h.save_folder, h.original_file, h.save_file, h.date
-		from hotplace h
+		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
+		from hotplace
 		<include refid="search"></include>
 		limit #{start}, #{listsize}
 	</select>
 
 
-	<select id="hotplaceTOP3" resultMap="hotplace">
-		select h.hotplace_no, h.user_id, h.title, h.content, h.address, h.recommendation, h.save_folder, h.original_file, h.save_file, h.date, u.name
-		from hotplace h, user u
-		where h.user_id = u.id
-		order by h.recommendation desc
+	<select id="hotplaceTOP3" parameterType="String" resultMap="hotplace">
+		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
+		from hotplace
+		where user_id = #{userId}
+		order by recommendation desc
 		limit 3
 	</select>
 	
@@ -82,9 +78,9 @@
 	</select>
 	
 	<select id="detail" parameterType="int" resultMap="hotplace">
-		select h.hotplace_no, h.user_id, h.title, h.content, h.address, h.recommendation, h.save_folder, h.original_file, h.save_file, h.date
-		from hotplace h
-		where h.hotplace_no = #{hotplaceNo}
+		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
+		from hotplace
+		where hotplace_no = #{hotplaceNo}
 	</select>
 
 	<update id="writeFile" parameterType="map">
@@ -93,9 +89,15 @@
 		where hotplace_no = #{hotplaceNo}
 	</update>
 
-	<update id="updateRecommendationCount" parameterType="int">
+	<update id="increaseRecommendationCount" parameterType="int">
 		update hotplace
 		set recommendation = recommendation + 1
+		where hotplace_no = #{hotplaceNo}
+	</update>
+
+	<update id="decreaseRecommendationCount" parameterType="int">
+		update hotplace
+		set recommendation = recommendation - 1
 		where hotplace_no = #{hotplaceNo}
 	</update>
 	

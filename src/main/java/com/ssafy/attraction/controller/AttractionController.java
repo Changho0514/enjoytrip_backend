@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/attraction")
 @CrossOrigin("*")
-@Api(tags = {"AttractionController  API "})
+@Api(tags = {"관광지  API"})
 @Slf4j
 public class AttractionController {
 	
@@ -94,4 +94,22 @@ public class AttractionController {
 			return new ResponseEntity<Result>(new Result("fail", "NO LIST"), HttpStatus.OK);
 		}
 	}
+	
+	@ApiOperation(value = "관광지 1개", notes = "contentId에 맞는 관광지 1개를 반환합니다")
+	@ApiResponses({ @ApiResponse(code = 200, message = "OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
+		@ApiResponse(code = 500, message = "서버에러!!") })
+	@GetMapping(value="/getAttraction/{contentId}")
+	public ResponseEntity<?> getAttraction(@PathVariable("contentId") int contentId) {
+		try {
+			AttractionInfoDto attractionInfoDto = attractionService.getAttraction(contentId);
+			if (attractionInfoDto != null) {
+				return new ResponseEntity<AttractionInfoDto>(attractionInfoDto, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "해당 관광지가 없습니다"), HttpStatus.OK);
+		}
+	}
+	
 }

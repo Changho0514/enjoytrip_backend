@@ -12,5 +12,5 @@ public interface AttractionService {
 	List<AttractionInfoDto> attractionList(AttractionInfoDto attractionInfoDto) throws Exception;
 	List<GugunDto> gugunList(int sidoCode) throws Exception;
 	List<SidoDto> sidoList() throws Exception;
-
+	AttractionInfoDto getAttraction(int contentId) throws Exception;
 }

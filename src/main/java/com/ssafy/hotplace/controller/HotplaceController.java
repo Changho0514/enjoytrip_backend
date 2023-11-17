@@ -3,20 +3,19 @@ package com.ssafy.hotplace.controller;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
+import com.ssafy.board.model.BoardDto;
 import com.ssafy.config.Result;
-import com.ssafy.hotplace.model.HotPlaceDto;
-import com.ssafy.hotplace.model.HotPlaceListDto;
-import com.ssafy.hotplace.model.HotPlaceParameterDto;
+import com.ssafy.hotplace.model.*;
+import com.ssafy.hotplace.model.service.HotPlaceService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,8 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.ssafy.hotplace.model.service.IHotPlaceService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
 @CrossOrigin("*")
@@ -44,11 +42,19 @@ public class HotPlaceController {
 	private final Logger logger = LoggerFactory.getLogger(HotPlaceController.class);
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
-    
-	private ServletContext servletContext;
-	private IHotPlaceService hotplaceService;
 
-	public HotPlaceController(ServletContext servletContext, IHotPlaceService hotplaceService) {
+	@Value("${file.path}")
+	private String uploadPath;
+
+	@Value("${file.path.upload-images}")
+	private String uploadImagePath;
+
+	@Value("${file.path.upload-files}")
+	private String uploadFilePath;
+	private ServletContext servletContext;
+	private HotPlaceService hotplaceService;
+
+	public HotPlaceController(ServletContext servletContext, HotPlaceService hotplaceService) {
 		super();
         this.servletContext = servletContext;
 		this.hotplaceService = hotplaceService;
@@ -95,73 +101,107 @@ public class HotPlaceController {
 //         return fileArray;
 //     }
 
+//	@PostMapping("/write")
+//	public ResponseEntity<?> write(@RequestBody HotPlaceDto hotplaceDto) {
+//		logger.debug("write hotplaceDto : {}", hotplaceDto);
+//		HttpStatus status = null;
+//
+//		try {
+//            //		FileUpload 관련 설정.
+//			hotplaceService.write(hotplaceDto);
+//
+//				logger.debug("write after hotplaceDto : {}", hotplaceDto);
+//				status = HttpStatus.OK;
+//			} catch (Exception e) {
+//			logger.error("핫플레이스 쓰기 실패 : {}", e);
+//			status = HttpStatus.INTERNAL_SERVER_ERROR;
+//		}
+//		return new ResponseEntity<>(hotplaceDto, status);
+//	}
+
+	
+
 	@PostMapping("/write")
-	public ResponseEntity<?> write(@RequestBody HotPlaceDto hotplaceDto) {
-		logger.debug("write hotplaceDto : {}", hotplaceDto);
-		HttpStatus status = null;
+    public ResponseEntity<?> write(@RequestBody HotPlaceDto hotplaceDto) {
+        logger.debug("write hotplaceDto : {}", hotplaceDto);
+        HttpStatus status = null;
 
-		try {
-            //		FileUpload 관련 설정.
-			hotplaceService.write(hotplaceDto);
+        try {
+            //        FileUpload 관련 설정.
+            hotplaceService.write(hotplaceDto);
+                logger.debug("write after hotplaceDto : {}", hotplaceDto);
+                status = HttpStatus.OK;
+            } catch (Exception e) {
+            logger.error("핫플레이스 쓰기 실패 : {}", e);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(hotplaceDto, status);
+    }
 
-				logger.debug("write after hotplaceDto : {}", hotplaceDto);
-				status = HttpStatus.OK;
-			} catch (Exception e) {
-			logger.error("핫플레이스 쓰기 실패 : {}", e);
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-		return new ResponseEntity<>(hotplaceDto, status);
-	}
+    @PostMapping("/file")
+    public ResponseEntity<?> writeFile(@RequestParam("hotplaceNo") int hotplaceNo,
+                                       @RequestParam("upfile") MultipartFile file) {
+        logger.debug("write hotplaceDto : {}", file);
+        HttpStatus status = null;
+        try {
+            //        FileUpload 관련 설정.
+            logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
+            if (!file.isEmpty()) {
+                String realPath = servletContext.getRealPath("/upload");
+                String today = new SimpleDateFormat("yyMMdd").format(new Date());
+                String saveFolder = realPath + File.separator + today;
+                logger.debug("저장 폴더-------------------------- : {}", saveFolder);
+                File folder = new File(saveFolder);
+                if (!folder.exists())
+                    folder.mkdirs();
+                String originalFileName = file.getOriginalFilename();
+                if (!originalFileName.isEmpty()) {
+                    String saveFileName = UUID.randomUUID().toString()
+                            + originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    Map<String, Object> params = new HashMap<>();
 
-	@PostMapping("/file")
-	public ResponseEntity<?> writeFile(@RequestParam("hotplaceNo") int hotplaceNo,
-			@RequestParam("upfile") MultipartFile file) {
-		logger.debug("write hotplaceDto : {}", file);
-		HttpStatus status = null;
-		try {
-            //		FileUpload 관련 설정.
-		logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
-		if (!file.isEmpty()) {
-			String realPath = servletContext.getRealPath("/upload");
-			String today = new SimpleDateFormat("yyMMdd").format(new Date());
-			String saveFolder = realPath + File.separator + today;
-			logger.debug("저장 폴더-------------------------- : {}", saveFolder);
-			File folder = new File(saveFolder);
-			if (!folder.exists())
-				folder.mkdirs();
-				String originalFileName = file.getOriginalFilename();
-				if (!originalFileName.isEmpty()) {
-					String saveFileName = UUID.randomUUID().toString()
-							+ originalFileName.substring(originalFileName.lastIndexOf('.'));
-					Map<String, Object> params = new HashMap<>();
+                    params.put("hotplaceNo", hotplaceNo);
+                    params.put("saveFolder", today);
+                    params.put("saveFile", saveFileName);
+                    params.put("originalFile", originalFileName);
+                    logger.debug("원본 파일 이름 : {}, 실제 저장 파일 이름 : {}", file.getOriginalFilename(), saveFileName);
+                    file.transferTo(new File(folder, saveFileName));
+                    hotplaceService.writeFile(params);
+                }
+            }
+            status = HttpStatus.OK;
+        } catch (Exception e) {
+            logger.error("핫플레이스 쓰기 실패 : {}", e);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(status);
+    }
 
-					params.put("hotplaceNo", hotplaceNo);
-					params.put("saveFolder", today);
-					params.put("saveFile", saveFileName);
-					params.put("originalFile", originalFileName);
-					logger.debug("원본 파일 이름 : {}, 실제 저장 파일 이름 : {}", file.getOriginalFilename(), saveFileName);
-					file.transferTo(new File(folder, saveFileName));
-					hotplaceService.writeFile(params);
-				}
-		}
-			status = HttpStatus.OK;
-		} catch (Exception e) {
-			logger.error("핫플레이스 쓰기 실패 : {}", e);
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-		return new ResponseEntity<>(status);
-	}
-
-	@PostMapping("/")
+	@PostMapping("/list")
 	public ResponseEntity<?> list(@RequestBody HotPlaceParameterDto hotplaceParameterDto) {
 		HotPlaceListDto list;
-
 		try {
 			list = hotplaceService.hotplaceList(hotplaceParameterDto);
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 			logger.debug("get hotplace list parameter id : {}", list);
 			return ResponseEntity.ok().headers(header).body(list);
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "핫플목록 가져오기 실패"), HttpStatus.OK);
+		}
+	}
+
+	@GetMapping("/top3/{userId}")
+	public ResponseEntity<?> list(@PathVariable("userId") String userId) {
+		List<HotPlaceDto> list;
+		try {
+			list = hotplaceService.hotplaceTOP3(userId);
+			logger.debug("get hotplace list parameter id : {}", list);
+			if(list != null) {
+				return new ResponseEntity<List<HotPlaceDto>>(list, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Result>(new Result("fail", "top3 핫플 목록이 없습니다"), HttpStatus.OK);
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "핫플목록 가져오기 실패"), HttpStatus.OK);
 		}

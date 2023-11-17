@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping("/board")
 @CrossOrigin("*")
-@Api(tags = {"게시판"})
+@Api(tags = {"게시판  API"})
 public class BoardController {
 	
 	private final Logger logger = LoggerFactory.getLogger(BoardController.class);

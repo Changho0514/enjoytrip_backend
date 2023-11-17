@@ -6,10 +6,11 @@ import java.util.Map;
 import com.ssafy.hotplace.model.HotPlaceDto;
 import com.ssafy.hotplace.model.HotPlaceListDto;
 import com.ssafy.hotplace.model.HotPlaceParameterDto;
+import com.ssafy.hotplace.model.HotPlaceRegisterDto;
 //import com.ssafy.util.PageNavigation;
 
-public interface IHotPlaceService {
-	void write(HotPlaceDto hotplaceDto) throws Exception;
+public interface HotPlaceService {
+	void write(HotPlaceDto hotPlaceDto) throws Exception;
 	HotPlaceListDto hotplaceList(HotPlaceParameterDto hotplaceParameterDto) throws Exception;
 //	PageNavigation makePageNavigation(Map<String, String> map) throws Exception;
 	HotPlaceDto detail(int hotplaceNo) throws Exception;
@@ -17,6 +18,6 @@ public interface IHotPlaceService {
 	void update(HotPlaceDto hotplaceDto) throws Exception;
 	void recommend(int hotplaceNo, String userId) throws Exception;
     void writeFile(Map<String, Object> params) throws Exception;
-	List<HotPlaceDto> hotplaceTOP3() throws Exception;
+    List<HotPlaceDto> hotplaceTOP3(String userId) throws Exception;
 	List<HotPlaceDto> getRecommendList(String userId) throws Exception;
 }

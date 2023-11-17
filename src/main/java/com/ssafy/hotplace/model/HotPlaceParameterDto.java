@@ -12,9 +12,9 @@ public class HotPlaceParameterDto {
     private int spp;
     private String key;
     private String word;
-    private int start;
-    private int listsize;
-
-    private int totalArticleCount;
-    private int totalPageCount;
+//    private int start;
+//    private int listsize;
+//
+//    private int totalArticleCount;
+//    private int totalPageCount;
 }

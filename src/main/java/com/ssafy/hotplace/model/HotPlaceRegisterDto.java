@@ -2,12 +2,14 @@ package com.ssafy.hotplace.model;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
-public class HotPlaceDto {
+public class HotPlaceRegisterDto {
     private int hotplaceNo;
     private String userId;
     private String title;
@@ -15,8 +17,6 @@ public class HotPlaceDto {
     private String address;
     private String userName;
     private int recommendation;
-    private String saveFolder;
-    private String originalFile;
-    private String saveFile;
-	private String date;
+    private List<FileInfoDto> fileInfos;
+    private String date;
 }

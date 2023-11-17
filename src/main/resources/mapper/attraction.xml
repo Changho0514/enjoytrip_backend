@@ -64,5 +64,12 @@
 		SELECT sido_code, sido_name
 		from sido
 	</select>
+	
+	<select id="getAttraction" parameterType="int" resultMap="attractioninfo">
+	 	SELECT content_id, content_type_id, title, addr1, addr2,
+		zipcode, tel, first_image, first_image2, readcount, sido_code, gugun_code, latitude, longitude, mlevel
+		FROM attraction_info
+		WHERE content_id=#{contentId}
+	</select>
 
 </mapper>

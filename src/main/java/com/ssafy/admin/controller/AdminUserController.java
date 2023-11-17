@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping("/admin")
 @CrossOrigin("*")
-@Api(tags = {"Admin의 회원관리"})
+@Api(tags = {"관리자 API"})
 public class AdminUserController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdminUserController.class);
@@ -57,20 +57,6 @@ public class AdminUserController {
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "회원목록 불러오기 실패"), HttpStatus.OK);
-		}
-		
-	}
-	
-	@ApiOperation(value = "회원등록", notes = "회원의 정보를 받아 처리.")
-	@ApiResponses({ @ApiResponse(code = 200, message = "회원목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
-		@ApiResponse(code = 500, message = "서버에러!!") })
-	@PostMapping(value = "/regist")
-	public ResponseEntity<?> regist(@RequestBody UserDto userDto) {
-		try {
-			userService.regist(userDto);
-			return new ResponseEntity<Result>(new Result("success", "회원등록 성공"), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<Result>(new Result("fail", "회원등록 실패"), HttpStatus.OK);
 		}
 		
 	}

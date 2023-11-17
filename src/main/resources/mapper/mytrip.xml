@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.mytrip.model.mapper.MytripMapper">
+	
+	<resultMap type="MytripDto" id="trip">
+		<result column="user_mytrip_no" property="userMytripNo"/>
+		<result column="no" property="no"/>
+		<result column="content_id" property="contentId"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+	
+	<select id="getMytripMax" parameterType="String" resultType="int">
+		select ifnull(max(user_mytrip_no),0) user_mytrip_no
+		from mytrip 
+		where user_id = #{userId} 
+		order by user_mytrip_no desc limit 1
+	</select>
+	
+	<select id="getMytripAll" parameterType="String" resultType="int">
+		select ifnull(user_mytrip_no,0) user_mytrip_no
+		from mytrip 
+		where user_id = #{userId} 
+		group by user_mytrip_no
+	</select>
+	
+	<select id="getMytrip" parameterType="MytripDto" resultMap="trip">
+		select content_id, user_mytrip_no, no, user_id
+		from mytrip 
+		where user_id = #{userId} 
+		and user_mytrip_no = #{userMytripNo}
+	</select>
+
+	<insert id="addMytrip" parameterType="MytripDto">
+		insert into mytrip (content_id, user_id, user_mytrip_no)
+		values (#{contentId}, #{userId}, #{userMytripNo})
+	</insert>
+	
+	<select id="getMytripCount" parameterType="String" resultType="int">
+		select count(user_mytrip_no) user_mytrip_no
+		from mytrip 
+		where user_id = #{userId}
+	</select>
+
+	<delete id="deleteMytripAll" parameterType="MytripDto">
+		delete 
+		from mytrip
+		where user_id = #{userId} 
+		and user_mytrip_no = #{userMytripNo}
+	</delete>
+
+	<delete id="deleteMytrip" parameterType="int">
+		delete
+		from mytrip
+		where no = #{no}
+	</delete>
+
+</mapper>

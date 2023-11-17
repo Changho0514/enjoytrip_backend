@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.ssafy.hotplace.model.HotPlaceListDto;
 import com.ssafy.hotplace.model.HotPlaceParameterDto;
+import com.ssafy.hotplace.model.HotPlaceRegisterDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ import com.ssafy.hotplace.model.mapper.HotPlaceMapper;
 //import com.ssafy.util.SizeConstant;
 
 @Service
-public class HotPlaceServiceImpl implements IHotPlaceService {
+public class HotPlaceServiceImpl implements HotPlaceService {
 	
 	private HotPlaceMapper hotplaceMapper;
 
@@ -28,12 +29,12 @@ public class HotPlaceServiceImpl implements IHotPlaceService {
 
 	@Override
 	@Transactional
-	public void write(HotPlaceDto hotplaceDto) throws Exception {
-		hotplaceMapper.write(hotplaceDto);
+	public void write(HotPlaceDto hotPlaceDto) throws Exception {
+		hotplaceMapper.write(hotPlaceDto);
 	}
 
 	@Override
-	public com.ssafy.hotplace.model.HotPlaceListDto hotplaceList(HotPlaceParameterDto hotplaceParameterDto) throws Exception {
+	public HotPlaceListDto hotplaceList(HotPlaceParameterDto hotplaceParameterDto) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("word", hotplaceParameterDto.getWord()== null ? "" : hotplaceParameterDto.getWord());
 		int currentPage = hotplaceParameterDto.getPgno();
@@ -44,8 +45,8 @@ public class HotPlaceServiceImpl implements IHotPlaceService {
 
 		String key = hotplaceParameterDto.getKey();
 		param.put("key", key == null ? "" : key);
-		if ("user_id".equals(key))
-			param.put("key", key == null ? "" : "b.user_id");
+//		if ("user_id".equals(key))
+//			param.put("key", key == null ? "" : "b.user_id");
 
 		List<HotPlaceDto> list = hotplaceMapper.hotplaceList(param);
 
@@ -91,9 +92,8 @@ public class HotPlaceServiceImpl implements IHotPlaceService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<HotPlaceDto> hotplaceTOP3() throws Exception {
-
-		return hotplaceMapper.hotplaceTOP3();
+	public List<HotPlaceDto> hotplaceTOP3(String userId) throws Exception {
+		return hotplaceMapper.hotplaceTOP3(userId);
 	}
 
 	@Override

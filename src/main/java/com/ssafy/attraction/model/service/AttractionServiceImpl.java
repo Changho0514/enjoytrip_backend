@@ -47,4 +47,9 @@ public class AttractionServiceImpl implements AttractionService {
 		return attractionMapper.sidoList();
 	}
 
+	@Override
+	public AttractionInfoDto getAttraction(int contentId) throws Exception {
+		return attractionMapper.getAttraction(contentId);
+	}
+
 }

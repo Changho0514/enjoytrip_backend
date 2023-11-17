@@ -25,7 +25,8 @@ public class UserDto {
 	private String emailId;
 	@NonNull
 	private String emailDomain;
-	private int role;
+	private int roll;
 	private int flag;
 	private String joinDate;
+	private String refreshToken;
 }
