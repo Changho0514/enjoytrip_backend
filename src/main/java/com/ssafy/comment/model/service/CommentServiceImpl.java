@@ -38,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
         List<CommentResultDto> list = commentMapper.list(param);
 
         int totalArticleCount = commentMapper.getTotalCommentCount(commentParameterDto.getArticleNo());
+        
         int totalPageCount = (totalArticleCount - 1) / sizePerPage + 1;
 
         CommentListDto commentListDto = new CommentListDto();
