@@ -23,6 +23,12 @@
 		insert into hotplace (user_id, title, content, address, save_folder, original_file, save_file)
 		values (#{userId}, #{title}, #{content}, #{address}, #{saveFolder}, #{originalFile}, #{saveFile})
 	</insert>
+	
+	<update id="writeFile" parameterType="map">
+		update hotplace
+		set save_folder = #{saveFolder}, original_file = #{originalFile}, save_file = #{saveFile}
+		where hotplace_no = #{hotplaceNo}
+	</update>
 
 	<sql id="search">
 		<if test="word != null and word != ''">
@@ -43,13 +49,42 @@
 		limit #{start}, #{listsize}
 	</select>
 
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(hotplace_no)
+		from hotplace
+		<where>
+			<include refid="search"></include>
+		</where>
+	</select>
 
 	<select id="hotplaceTOP3" parameterType="String" resultMap="hotplace">
 		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
 		from hotplace
-		where user_id = #{userId}
 		order by recommendation desc
 		limit 3
+	</select>
+	
+	<select id="detail" parameterType="int" resultMap="hotplace">
+		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
+		from hotplace
+		where hotplace_no = #{hotplaceNo}
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from hotplace
+		where hotplace_no = #{hotplaceNo}
+	</delete>
+	
+	<update id="modify" parameterType="HotPlaceDto">
+		update hotplace
+		set title = #{title}, content = #{content}, address=#{address}, save_folder = #{saveFolder}, original_file = #{originalFile}, save_file = #{saveFile} 
+		where hotplace_no = #{hotplaceNo}
+	</update>
+	
+	<select id="getRecommend" parameterType="int" resultType="int">
+		select recommendation
+		from hotplace
+		where hotplace_no=#{hotplaceNo}
 	</select>
 	
 	<select id="recommendList" parameterType="String" resultMap="hotplace">
@@ -62,56 +97,17 @@
 		insert into recommendation_hotplace (hotplace_no, user_id)
 		values (#{hotplaceNo}, #{userId})
 	</insert>
+
+	<delete id="deleteRecommendation" parameterType="map">
+		delete from recommendation_hotplace
+		where hotplace_no = #{hotplaceNo} and
+
+	</delete>
 	
-	<select id="getTotalCount" parameterType="map" resultType="int">
-		select count(hotplace_no)
-		from hotplace
-		<where>
-			<include refid="search"></include>
-		</where>
-	</select>
 	<select id="getTotalCountWithJoin" parameterType="map" resultType="int">
 		select count(hotplace_no)
 		from hotplace h, user u
 		where h.user_id =u.id
 			<include refid="search"></include>
 	</select>
-	
-	<select id="detail" parameterType="int" resultMap="hotplace">
-		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
-		from hotplace
-		where hotplace_no = #{hotplaceNo}
-	</select>
-
-	<update id="writeFile" parameterType="map">
-		update hotplace
-		set save_folder = #{saveFolder}, original_file = #{originalFile}, save_file = #{saveFile}
-		where hotplace_no = #{hotplaceNo}
-	</update>
-
-	<update id="increaseRecommendationCount" parameterType="int">
-		update hotplace
-		set recommendation = recommendation + 1
-		where hotplace_no = #{hotplaceNo}
-	</update>
-
-	<update id="decreaseRecommendationCount" parameterType="int">
-		update hotplace
-		set recommendation = recommendation - 1
-		where hotplace_no = #{hotplaceNo}
-	</update>
-	
-	<update id="update" parameterType="HotPlaceDto">
-		update hotplace
-		set title = #{title}, content = #{content}, address=#{address}, save_folder = #{saveFolder}, original_file = #{originalFile}, save_file = #{saveFile} 
-		where hotplace_no = #{hotplaceNo}
-	</update>
-	
-	<delete id="delete" parameterType="int">
-		delete from hotplace
-		where hotplace_no = #{hotplaceNo}
-	</delete>
-
-
-
 </mapper>

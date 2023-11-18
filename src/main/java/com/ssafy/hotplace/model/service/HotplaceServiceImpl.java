@@ -1,5 +1,6 @@
 package com.ssafy.hotplace.model.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,15 +8,12 @@ import java.util.Map;
 
 import com.ssafy.hotplace.model.HotPlaceListDto;
 import com.ssafy.hotplace.model.HotPlaceParameterDto;
-import com.ssafy.hotplace.model.HotPlaceRegisterDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//import com.ssafy.board.model.mapper.BoardMapper;
 import com.ssafy.hotplace.model.HotPlaceDto;
 import com.ssafy.hotplace.model.mapper.HotPlaceMapper;
-//import com.ssafy.util.PageNavigation;
-//import com.ssafy.util.SizeConstant;
+
 
 @Service
 public class HotPlaceServiceImpl implements HotPlaceService {
@@ -31,6 +29,11 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	@Transactional
 	public void write(HotPlaceDto hotPlaceDto) throws Exception {
 		hotplaceMapper.write(hotPlaceDto);
+	}
+	
+	@Override
+	public void writeFile(Map<String, Object> params) throws Exception{
+		hotplaceMapper.writeFile(params);
 	}
 
 	@Override
@@ -60,40 +63,11 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 
 		return hotPlaceListDto;
 	}
-
-	//TODO : Pagination 부분
-//	@Override
-//	@Transactional(readOnly = true)
-//	public List<HotPlaceDto> hotplaceList(Map<String, String> map) throws Exception {
-//		Map<String, Object> param = new HashMap<String, Object>();
-//		String key = map.get("key");
-//		if("username".equals(key))
-//			key = "name";
-//		param.put("sort", map.get("sort"));
-//		param.put("key", key == null ? "" : key);
-//		param.put("word", map.get("word") == null ? "" : map.get("word"));
-//		int pgNo = Integer.parseInt(map.get("pgno") == null ? "1" : map.get("pgno"));
-//		int start = pgNo * .HOT_PLACE_LIST_SIZE - SizeConstant.HOT_PLACE_LIST_SIZE;
-//		param.put("start", start);
-//		param.put("listsize", SizeConstant.HOT_PLACE_LIST_SIZE);
-//		return hotplaceMapper.hotplaceList(param);
-//	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
-	public List<HotPlaceDto> getRecommendList(String userId) throws Exception {
-		List<HotPlaceDto> recList = new ArrayList<>();
-		List<HotPlaceDto> noList = hotplaceMapper.recommendList(userId); // 좋아요 누른 목록 key 받아오기
-		for(HotPlaceDto h : noList){
-			recList.add(hotplaceMapper.detail(h.getHotplaceNo()));
-		}
-		return recList;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<HotPlaceDto> hotplaceTOP3(String userId) throws Exception {
-		return hotplaceMapper.hotplaceTOP3(userId);
+	public List<HotPlaceDto> hotplaceTOP3() throws Exception {
+		return hotplaceMapper.hotplaceTOP3();
 	}
 
 	@Override
@@ -101,32 +75,43 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	public HotPlaceDto detail(int hotplaceNo) throws Exception {
 		return hotplaceMapper.detail(hotplaceNo);
 	}
-
+	
 	@Override
 	@Transactional
 	public void delete(int hotplaceNo) throws Exception {
 		hotplaceMapper.delete(hotplaceNo);
 	}
-
+	
 	@Override
 	@Transactional
-	public void update(HotPlaceDto hotplaceDto) throws Exception {
-		hotplaceMapper.update(hotplaceDto);
+	public void modify(HotPlaceDto hotplaceDto) throws Exception {
+		hotplaceMapper.modify(hotplaceDto);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public int getRecommend(int hotplaceNo) throws Exception {
+		return hotplaceMapper.getRecommend(hotplaceNo);
 	}
 
 	@Override
-	@Transactional
-	public void recommend(int hotplaceNo, String userId) throws Exception {
-		Map<String, Object> param = new HashMap<>();
-		param.put("hotplaceNo", hotplaceNo);
-		param.put("userId", userId);
-		hotplaceMapper.addRecommendation(param);
-		hotplaceMapper.updateRecommendationCount(hotplaceNo);
+	public void increaseRecommendationCount(int hotplaceNo) throws SQLException {
+
 	}
 
 	@Override
-	public void writeFile(Map<String, Object> params) throws Exception{
-		hotplaceMapper.writeFile(params);
+	public void decreaseRecommendationCount(int hotplaceNo) throws SQLException {
+
 	}
+
+//	@Override
+//	@Transactional
+//	public void recommend(int hotplaceNo, String userId) throws Exception {
+//		Map<String, Object> param = new HashMap<>();
+//		param.put("hotplaceNo", hotplaceNo);
+//		param.put("userId", userId);
+//		hotplaceMapper.addRecommendation(param);
+//		hotplaceMapper.updateRecommendationCount(hotplaceNo);
+//	}
 
 }

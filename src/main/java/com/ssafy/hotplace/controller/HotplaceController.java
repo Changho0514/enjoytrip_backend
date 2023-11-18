@@ -13,6 +13,9 @@ import com.ssafy.config.Result;
 import com.ssafy.hotplace.model.*;
 import com.ssafy.hotplace.model.service.HotPlaceService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +40,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/hotplace")
+@Api(tags = {"핫플레이스  API"})
 public class HotPlaceController {
 
 	private final Logger logger = LoggerFactory.getLogger(HotPlaceController.class);
-	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
 
 	@Value("${file.path}")
 	private String uploadPath;
@@ -60,91 +62,25 @@ public class HotPlaceController {
 		this.hotplaceService = hotplaceService;
 	}
 
-	/*
-	 * @GetMapping("/write") public String write(@RequestParam Map<String, String>
-	 * map, Model model) { logger.debug("write call parameter {}", map);
-	 * model.addAttribute("pgno", map.get("pgno")); model.addAttribute("key",
-	 * map.get("key")); model.addAttribute("word", map.get("word")); return
-	 * "board/write"; }
-	 */
-//	 @GetMapping(value="/image", produces= MediaType.IMAGE_PNG_VALUE)
-//     public @ResponseBody byte[] getImage(@RequestParam("filePath") String filePath) // A
-//             throws IOException {
-//         FileInputStream fis = null;
-//         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//         // String[] fileAr = fileTime.split("_");
-//         // String filePath = fileAr[0];
-//
-//         // String fileDir = "D:\\Han\\sample\\" + filePath + "\\" + fileTime + "_" + value + ".png"; // 파일경로
-//	 	logger.debug("이미지 출력 시도", filePath);
-//         try{
-//             fis = new FileInputStream(filePath);
-//         } catch(FileNotFoundException e){
-//             e.printStackTrace();
-//         }
-//
-//         int readCount = 0;
-//         byte[] buffer = new byte[1024];
-//         byte[] fileArray = null;
-//
-//         try{
-//             while((readCount = fis.read(buffer)) != -1){
-//                 baos.write(buffer, 0, readCount);
-//             }
-//             fileArray = baos.toByteArray();
-//             fis.close();
-//             baos.close();
-//         } catch(IOException e){
-//             throw new RuntimeException("File Error");
-//         }
-//         return fileArray;
-//     }
-
-//	@PostMapping("/write")
-//	public ResponseEntity<?> write(@RequestBody HotPlaceDto hotplaceDto) {
-//		logger.debug("write hotplaceDto : {}", hotplaceDto);
-//		HttpStatus status = null;
-//
-//		try {
-//            //		FileUpload 관련 설정.
-//			hotplaceService.write(hotplaceDto);
-//
-//				logger.debug("write after hotplaceDto : {}", hotplaceDto);
-//				status = HttpStatus.OK;
-//			} catch (Exception e) {
-//			logger.error("핫플레이스 쓰기 실패 : {}", e);
-//			status = HttpStatus.INTERNAL_SERVER_ERROR;
-//		}
-//		return new ResponseEntity<>(hotplaceDto, status);
-//	}
-
-	
-
+	@ApiOperation(value = "파일 제외 핫플 쓰기")
 	@PostMapping("/write")
     public ResponseEntity<?> write(@RequestBody HotPlaceDto hotplaceDto) {
         logger.debug("write hotplaceDto : {}", hotplaceDto);
-        HttpStatus status = null;
-
         try {
-            //        FileUpload 관련 설정.
             hotplaceService.write(hotplaceDto);
-                logger.debug("write after hotplaceDto : {}", hotplaceDto);
-                status = HttpStatus.OK;
-            } catch (Exception e) {
-            logger.error("핫플레이스 쓰기 실패 : {}", e);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<Integer>(hotplaceDto.getHotplaceNo(), HttpStatus.OK);
+        } catch (Exception e) {
+        	return new ResponseEntity<Result>(new Result("fail", "파일 제외 핫플 write 실패"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(hotplaceDto, status);
     }
 
-    @PostMapping("/file")
+	@ApiOperation(value = "파일 핫플 쓰기")
+    @PostMapping("/write/file")
     public ResponseEntity<?> writeFile(@RequestParam("hotplaceNo") int hotplaceNo,
                                        @RequestParam("upfile") MultipartFile file) {
         logger.debug("write hotplaceDto : {}", file);
         HttpStatus status = null;
-        try {
-            //        FileUpload 관련 설정.
+        try {//        FileUpload 관련 설정.
             logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
             if (!file.isEmpty()) {
                 String realPath = servletContext.getRealPath("/upload");
@@ -156,10 +92,9 @@ public class HotPlaceController {
                     folder.mkdirs();
                 String originalFileName = file.getOriginalFilename();
                 if (!originalFileName.isEmpty()) {
-                    String saveFileName = UUID.randomUUID().toString()
-                            + originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    String saveFileName = UUID.randomUUID().toString() + originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    
                     Map<String, Object> params = new HashMap<>();
-
                     params.put("hotplaceNo", hotplaceNo);
                     params.put("saveFolder", today);
                     params.put("saveFile", saveFileName);
@@ -168,15 +103,16 @@ public class HotPlaceController {
                     file.transferTo(new File(folder, saveFileName));
                     hotplaceService.writeFile(params);
                 }
+                return new ResponseEntity<Result>(new Result("success", "파일만 핫플 write 성공"), HttpStatus.OK);
+            } else {
+            	return new ResponseEntity<Result>(new Result("fail", "파일이 없습니다"), HttpStatus.OK);
             }
-            status = HttpStatus.OK;
         } catch (Exception e) {
-            logger.error("핫플레이스 쓰기 실패 : {}", e);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        	return new ResponseEntity<Result>(new Result("fail", "파일만 핫플 write 실패"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(status);
     }
 
+	@ApiOperation(value = "파일 전체 가져오기")
 	@PostMapping("/list")
 	public ResponseEntity<?> list(@RequestBody HotPlaceParameterDto hotplaceParameterDto) {
 		HotPlaceListDto list;
@@ -184,19 +120,18 @@ public class HotPlaceController {
 			list = hotplaceService.hotplaceList(hotplaceParameterDto);
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-			logger.debug("get hotplace list parameter id : {}", list);
 			return ResponseEntity.ok().headers(header).body(list);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "핫플목록 가져오기 실패"), HttpStatus.OK);
 		}
 	}
 
-	@GetMapping("/top3/{userId}")
-	public ResponseEntity<?> list(@PathVariable("userId") String userId) {
+	@ApiOperation(value = "핫플 top3 가져오기")
+	@GetMapping("/top3")
+	public ResponseEntity<?> list() {
 		List<HotPlaceDto> list;
 		try {
-			list = hotplaceService.hotplaceTOP3(userId);
-			logger.debug("get hotplace list parameter id : {}", list);
+			list = hotplaceService.hotplaceTOP3();
 			if(list != null) {
 				return new ResponseEntity<List<HotPlaceDto>>(list, HttpStatus.OK);
 			} else {
@@ -207,107 +142,131 @@ public class HotPlaceController {
 		}
 	}
 
-	@GetMapping("/list/recommend/{userId}")
-	public ResponseEntity<?> recommendList(@PathVariable("userId") String userId) {
-		logger.debug("recommend hotplace list parameter id : {}", userId);
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
-		List<HotPlaceDto> list = null;
-		try {
-			list = hotplaceService.getRecommendList(userId);
-			// PageNavigation pageNavigation = hotplaceService.makePageNavigation(map);
-			resultMap.put("list",list);
-			// resultMap.put("navigation", pageNavigation);
-			// resultMap.put("sort", map.get("sort"));
-			// resultMap.put("pgno", map.get("pgno"));
-			// resultMap.put("key", map.get("key"));
-			// resultMap.put("word", map.get("word"));
-			resultMap.put("message", SUCCESS);
-			status = HttpStatus.OK;
-		} catch (Exception e) {
-			logger.error("핫플레이스 추천한 목록 불러오기 실패 : {}", e);
-			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-		return new ResponseEntity<>(resultMap, status);
-	}
-
-	@GetMapping("/{hotplaceno}")
-	public ResponseEntity<?> view(@PathVariable("hotplaceno") int hotplaceNo) {
-		logger.info("view hotplaceNo : {}", hotplaceNo);
+	@ApiOperation(value = "핫플 상세보기")
+	@GetMapping("/detail/{hotplaceno}")
+	public ResponseEntity<?> detail(@PathVariable("hotplaceno") int hotplaceNo) {
+		logger.info("detail hotplaceNo : {}", hotplaceNo);
 		HotPlaceDto hotplaceDto = null;
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
-        UrlResource url = null;
 		try {
 			hotplaceDto = hotplaceService.detail(hotplaceNo);
-			resultMap.put("message", SUCCESS);
-			status = HttpStatus.OK;
+			return new ResponseEntity<HotPlaceDto>(hotplaceDto, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("핫플레이스  상세보기 실패 : {}", e);
-			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return new ResponseEntity<Result>(new Result("fail", "핫플 가져오기 실패"), HttpStatus.OK);
 		}
-		logger.info("view hotplace : {}", hotplaceDto);
-		return new ResponseEntity<>(hotplaceDto, status);
 	}
 
-	@PutMapping("/{hotplaceno}")
-	public ResponseEntity<?> modify(@PathVariable("hotplaceno") int hotplaceNo, @RequestBody HotPlaceDto hotplaceDto){
+	@ApiOperation(value = "핫플 수정")
+	@PutMapping("/modify")
+	public ResponseEntity<?> modify(@RequestBody HotPlaceDto hotplaceDto){
 		logger.debug("modify hotplaceDto : {}", hotplaceDto);
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
 		try {
-			hotplaceService.update(hotplaceDto);
-			hotplaceDto = hotplaceService.detail(hotplaceDto.getHotplaceNo());
-			resultMap.put("hotplace", hotplaceDto);
-//			resultMap.put("pgno", map.get("pgno"));
-//			resultMap.put("key", map.get("key"));
-//			resultMap.put("word", map.get("word"));
-			resultMap.put("message", SUCCESS);
-			status = HttpStatus.OK;
+			hotplaceService.modify(hotplaceDto);
+			return new ResponseEntity<Result>(new Result("success", "핫플 수정 성공"), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("핫플레이스  수정 실패 : {}", e);
-			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return new ResponseEntity<Result>(new Result("fail", "핫플 수정 실패"), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(resultMap, status);
 	}
 
-	//핫 플레이스  삭제 map 매핑 관련 처리..
-	@DeleteMapping("/{hotplaceno}")
+	@ApiOperation(value = "핫플 삭제")
+	@DeleteMapping("/delete/{hotplaceno}")
 	public ResponseEntity<?> delete(@PathVariable("hotplaceno") int hotplaceNo) {
 		logger.debug("delete hotplaceNo : {}", hotplaceNo);
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
 		try {
 			hotplaceService.delete(hotplaceNo);
-			resultMap.put("message", SUCCESS);
-			status = HttpStatus.OK;
+			return new ResponseEntity<Result>(new Result("success", "핫플 삭제 성공"), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("핫플레이스  삭제 실패 : {}", e);
-			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return new ResponseEntity<Result>(new Result("fail", "핫플 삭제 실패"), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(resultMap, status);
 	}
-
-	// TODO:수정할 필요가 있을 듯함
-	@GetMapping("/recommend/{hotplaceNo}")
-	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo, String userId){
+	
+	@ApiOperation(value = "추천수 가져오기")
+	@GetMapping("/getRecommend/{hotplaceNo}")
+	public ResponseEntity<?> getRecommend(@PathVariable("hotplaceNo") int hotplaceNo){
 		logger.debug("recommend hotplace : {}", hotplaceNo);
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
 		try {
-			hotplaceService.recommend(hotplaceNo, userId);
-			resultMap.put("message", SUCCESS);
-			status = HttpStatus.OK;
+			int cnt = hotplaceService.getRecommend(hotplaceNo);
+			return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("핫플레이스  추천 실패 : {}", e);
-			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return new ResponseEntity<Result>(new Result("fail", "추천수 가져오기 실패"), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(resultMap, status);
 	}
+	
+//	@ApiOperation(value = "추천하기")
+//	@GetMapping("/recommend/{hotplaceNo}")
+//	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo, String userId){
+//		logger.debug("recommend hotplace : {}", hotplaceNo);
+//		Map<String, Object> resultMap = new HashMap<>();
+//		HttpStatus status = null;
+//		try {
+//			hotplaceService.recommend(hotplaceNo, userId);
+//			resultMap.put("message", SUCCESS);
+//			status = HttpStatus.OK;
+//		} catch (Exception e) {
+//			logger.error("핫플레이스  추천 실패 : {}", e);
+//			resultMap.put("message", e.getMessage());
+//			status = HttpStatus.INTERNAL_SERVER_ERROR;
+//		}
+//		return new ResponseEntity<>(resultMap, status);
+//	}
+	
+//	@ApiOperation(value = "유저 아이디에 맞는 추천 목록 가져오기")
+//	@GetMapping("/list/recommend/{userId}")
+//	public ResponseEntity<?> recommendList(@PathVariable("userId") String userId) {
+//		logger.debug("recommend hotplace list parameter id : {}", userId);
+//		Map<String, Object> resultMap = new HashMap<>();
+//		HttpStatus status = null;
+//		List<HotPlaceDto> list = null;
+//		try {
+//			list = hotplaceService.getRecommendList(userId);
+//			// PageNavigation pageNavigation = hotplaceService.makePageNavigation(map);
+//			resultMap.put("list",list);
+//			// resultMap.put("navigation", pageNavigation);
+//			// resultMap.put("sort", map.get("sort"));
+//			// resultMap.put("pgno", map.get("pgno"));
+//			// resultMap.put("key", map.get("key"));
+//			// resultMap.put("word", map.get("word"));
+//			resultMap.put("message", SUCCESS);
+//			status = HttpStatus.OK;
+//		} catch (Exception e) {
+//			logger.error("핫플레이스 추천한 목록 불러오기 실패 : {}", e);
+//			resultMap.put("message", e.getMessage());
+//			status = HttpStatus.INTERNAL_SERVER_ERROR;
+//		}
+//		return new ResponseEntity<>(resultMap, status);
+//	}
+	
+//	 @GetMapping(value="/image", produces= MediaType.IMAGE_PNG_VALUE)
+//  public @ResponseBody byte[] getImage(@RequestParam("filePath") String filePath) // A
+//          throws IOException {
+//      FileInputStream fis = null;
+//      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//      // String[] fileAr = fileTime.split("_");
+//      // String filePath = fileAr[0];
+//
+//      // String fileDir = "D:\\Han\\sample\\" + filePath + "\\" + fileTime + "_" + value + ".png"; // 파일경로
+//	 	logger.debug("이미지 출력 시도", filePath);
+//      try{
+//          fis = new FileInputStream(filePath);
+//      } catch(FileNotFoundException e){
+//          e.printStackTrace();
+//      }
+//
+//      int readCount = 0;
+//      byte[] buffer = new byte[1024];
+//      byte[] fileArray = null;
+//
+//      try{
+//          while((readCount = fis.read(buffer)) != -1){
+//              baos.write(buffer, 0, readCount);
+//          }
+//          fileArray = baos.toByteArray();
+//          fis.close();
+//          baos.close();
+//      } catch(IOException e){
+//          throw new RuntimeException("File Error");
+//      }
+//      return fileArray;
+//  }
 
 }

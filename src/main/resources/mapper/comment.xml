@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ssafy.comment.model.mapper.CommentMapper">
+    <resultMap type="CommentResultDto" id="comment">
+        <result column="comment_no" property="commentNo"/>
+        <result column="article_no" property="articleNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <insert id="write" parameterType="CommentDto">
+        insert into comment (article_no, user_id, content, date)
+        values (#{articleNo}, #{userId}, #{content}, now())
+    </insert>
+
+    <update id="update" parameterType="CommentUpdateDto">
+        update comment
+        set content = #{content}
+        where comment_no = #{commentNo}
+    </update>
+
+    <select id="list" parameterType="map" resultMap="comment">
+        select * from comment
+        where article_no = #{articleNo}
+            limit #{start}, #{listsize}
+    </select>
+
+    <delete id="delete" parameterType="int">
+        delete from comment
+        where comment_no = #{commentNo}
+    </delete>
+
+    <select id="getTotalCommentCount" parameterType="int" resultType="int">
+        select count(comment_no)
+        from comment
+        where article_no = #{articleNo}
+    </select>
+
+</mapper>
