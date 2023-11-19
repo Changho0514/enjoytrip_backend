@@ -1,10 +1,8 @@
 package com.ssafy.hotplace.model.service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.ssafy.hotplace.model.HotPlaceListDto;
 import com.ssafy.hotplace.model.HotPlaceParameterDto;
@@ -90,18 +88,33 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public int getRecommend(int hotplaceNo) throws Exception {
-		return hotplaceMapper.getRecommend(hotplaceNo);
+	public int getRecommendCount(int hotplaceNo) throws Exception {
+		return hotplaceMapper.getRecommendCount(hotplaceNo);
 	}
 
 	@Override
-	public void increaseRecommendationCount(int hotplaceNo) throws SQLException {
-
+	public void changeRecommendState(int hotplaceNo, String userId) throws Exception {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("userId", userId);
+		param.put("hotplaceNo", hotplaceNo);
+		// 핫플 누른 수가 없으면
+		if(hotplaceMapper.checkRecommendation(param) == 0){
+			hotplaceMapper.increaseRecommendationCount(hotplaceNo);
+		} else{
+			hotplaceMapper.decreaseRecommendationCount(hotplaceNo);
+		}
 	}
 
 	@Override
-	public void decreaseRecommendationCount(int hotplaceNo) throws SQLException {
+	public List<HotPlaceDto> getMyRecommendList(String userId) throws Exception {
+		List<Integer> list = hotplaceMapper.getMyRecommendList(userId);
+		List<HotPlaceDto> result = new ArrayList<>();
 
+		for (int hotplaceNo: list) {
+			HotPlaceDto dto = hotplaceMapper.detail(hotplaceNo);
+			result.add(dto);
+		}
+		return result;
 	}
 
 //	@Override

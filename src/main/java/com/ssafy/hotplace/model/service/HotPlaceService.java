@@ -20,9 +20,8 @@ public interface HotPlaceService {
 	void modify(HotPlaceDto hotplaceDto) throws Exception;
 	
 //	void recommend(int hotplaceNo, String userId) throws Exception;
-	int getRecommend(int hotplaceNo) throws Exception;
+	int getRecommendCount(int hotplaceNo) throws Exception;
 
-	void increaseRecommendationCount(int hotplaceNo) throws SQLException;
-	void decreaseRecommendationCount(int hotplaceNo) throws SQLException;
-//	List<HotPlaceDto> getRecommendList(String userId) throws Exception;
+	void changeRecommendState(int hotplaceNo, String userId) throws Exception;
+	List<HotPlaceDto> getMyRecommendList(String userId) throws Exception;
 }

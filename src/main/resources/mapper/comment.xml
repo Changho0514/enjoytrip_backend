@@ -17,7 +17,7 @@
         values (#{articleNo}, #{userId}, #{content}, now())
     </insert>
 
-    <update id="update" parameterType="CommentUpdateDto">
+    <update id="modify" parameterType="CommentUpdateDto">
         update comment
         set content = #{content}
         where comment_no = #{commentNo}

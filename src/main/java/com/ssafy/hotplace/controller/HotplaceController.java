@@ -84,6 +84,7 @@ public class HotPlaceController {
             logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
             if (!file.isEmpty()) {
                 String realPath = servletContext.getRealPath("/upload");
+//                String realPath = uploadPath;
                 String today = new SimpleDateFormat("yyMMdd").format(new Date());
                 String saveFolder = realPath + File.separator + today;
                 logger.debug("저장 폴더-------------------------- : {}", saveFolder);
@@ -120,6 +121,7 @@ public class HotPlaceController {
 			list = hotplaceService.hotplaceList(hotplaceParameterDto);
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
 			return ResponseEntity.ok().headers(header).body(list);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "핫플목록 가져오기 실패"), HttpStatus.OK);
@@ -179,35 +181,41 @@ public class HotPlaceController {
 		}
 	}
 	
-	@ApiOperation(value = "추천수 가져오기")
+	@ApiOperation(value = "게시물 추천수 가져오기")
 	@GetMapping("/getRecommend/{hotplaceNo}")
 	public ResponseEntity<?> getRecommend(@PathVariable("hotplaceNo") int hotplaceNo){
 		logger.debug("recommend hotplace : {}", hotplaceNo);
 		try {
-			int cnt = hotplaceService.getRecommend(hotplaceNo);
+			int cnt = hotplaceService.getRecommendCount(hotplaceNo);
 			return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "추천수 가져오기 실패"), HttpStatus.OK);
 		}
 	}
 	
-//	@ApiOperation(value = "추천하기")
-//	@GetMapping("/recommend/{hotplaceNo}")
-//	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo, String userId){
-//		logger.debug("recommend hotplace : {}", hotplaceNo);
-//		Map<String, Object> resultMap = new HashMap<>();
-//		HttpStatus status = null;
-//		try {
-//			hotplaceService.recommend(hotplaceNo, userId);
-//			resultMap.put("message", SUCCESS);
-//			status = HttpStatus.OK;
-//		} catch (Exception e) {
-//			logger.error("핫플레이스  추천 실패 : {}", e);
-//			resultMap.put("message", e.getMessage());
-//			status = HttpStatus.INTERNAL_SERVER_ERROR;
-//		}
-//		return new ResponseEntity<>(resultMap, status);
-//	}
+	@ApiOperation(value = "추천하기")
+	@GetMapping("/recommend/{hotplaceNo}")
+	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo, String userId) throws Exception {
+		try {
+			hotplaceService.changeRecommendState(hotplaceNo, userId);
+			return new ResponseEntity<Integer>(hotplaceNo, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("핫플레이스  추천 실패 : {}", e);
+			return new ResponseEntity<Result>(new Result("fail", "추천 하기 실패"), HttpStatus.OK);
+		}
+	}
+
+	@ApiOperation(value = "나의 추천 목록 가져오기")
+	@GetMapping("/MyRecommend/{userId}")
+	public ResponseEntity<?> getMyRecommendList(@PathVariable("userId") String userId) throws Exception {
+		try {
+			List<HotPlaceDto> myRecommendList = hotplaceService.getMyRecommendList(userId);
+			return new ResponseEntity<List<HotPlaceDto>>(myRecommendList, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("나의 추천 목록 가져오기 실패 : {}", e);
+			return new ResponseEntity<Result>(new Result("fail", "나의 추천 목록 가져오기 실패"), HttpStatus.OK);
+		}
+	}
 	
 //	@ApiOperation(value = "유저 아이디에 맞는 추천 목록 가져오기")
 //	@GetMapping("/list/recommend/{userId}")

@@ -81,27 +81,43 @@
 		where hotplace_no = #{hotplaceNo}
 	</update>
 	
-	<select id="getRecommend" parameterType="int" resultType="int">
+	<select id="getRecommendCount" parameterType="int" resultType="int">
 		select recommendation
 		from hotplace
 		where hotplace_no=#{hotplaceNo}
 	</select>
 	
-	<select id="recommendList" parameterType="String" resultMap="hotplace">
+	<select id="getMyRecommendList" parameterType="String" resultType="int">
 		select distinct hotplace_no
 		from recommendation_hotplace
 		where user_id = #{userId}
 	</select>
 
-	<insert id="addRecommendation" parameterType="map">
+	<select id="checkRecommendation" parameterType="map" resultType="int">
+		select count(user_id) from recommendation_hotplace
+		where hotplace_no = #{hotplaceNo} and user_id = #{userId}
+	</select>
+
+	<update id="increaseRecommendationCount" parameterType="int">
+		update hotplace
+		set recommendation = recommendation + 1
+		where hotplace_no = #{hotplaceNo}
+	</update>
+
+	<update id="decreaseRecommendationCount" parameterType="int">
+		update hotplace
+		set recommendation = recommendation - 1
+		where hotplace_no = #{hotplaceNo}
+	</update>
+
+	<insert id="insertRecommendationHotplace" parameterType="map">
 		insert into recommendation_hotplace (hotplace_no, user_id)
 		values (#{hotplaceNo}, #{userId})
 	</insert>
 
-	<delete id="deleteRecommendation" parameterType="map">
+	<delete id="deleteRecommendationHotplace" parameterType="map">
 		delete from recommendation_hotplace
-		where hotplace_no = #{hotplaceNo} and
-
+		where hotplace_no = #{hotplaceNo} and user_id = #{userId}
 	</delete>
 	
 	<select id="getTotalCountWithJoin" parameterType="map" resultType="int">

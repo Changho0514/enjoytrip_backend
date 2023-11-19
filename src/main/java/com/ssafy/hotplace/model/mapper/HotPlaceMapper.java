@@ -22,11 +22,17 @@ public interface HotPlaceMapper {
 	void delete(int hotplaceNo) throws SQLException;
 	void modify(HotPlaceDto hotplaceDto) throws SQLException;
 	
-	int getRecommend(int hotplaceNo) throws SQLException;
+	int getRecommendCount(int hotplaceNo) throws SQLException;
 
 	void increaseRecommendationCount(int hotplaceNo) throws SQLException;
 	void decreaseRecommendationCount(int hotplaceNo) throws SQLException;
-//	List<HotPlaceDto> getRecommendList(String userId) throws Exception;
+
+	void insertRecommendationHotplace(Map<String, Object> param) throws SQLException;
+	void deleteRecommendationHotplace(Map<String, Object> param) throws SQLException;
+
+	int checkRecommendation(Map<String, Object> param) throws SQLException;
+
+	List<Integer> getMyRecommendList(String userId) throws Exception;
 	
 	
 //	int getTotalCountWithJoin(Map<String, Object> param) throws SQLException;

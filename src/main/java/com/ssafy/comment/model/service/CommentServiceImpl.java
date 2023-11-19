@@ -1,8 +1,5 @@
 package com.ssafy.comment.model.service;
 
-import com.ssafy.board.model.BoardDto;
-import com.ssafy.board.model.BoardListDto;
-import com.ssafy.board.model.mapper.BoardMapper;
 import com.ssafy.comment.model.*;
 import com.ssafy.comment.model.mapper.CommentMapper;
 import org.springframework.stereotype.Service;
@@ -37,15 +34,13 @@ public class CommentServiceImpl implements CommentService {
 
         List<CommentResultDto> list = commentMapper.list(param);
 
-        int totalArticleCount = commentMapper.getTotalCommentCount(commentParameterDto.getArticleNo());
-        
-        int totalPageCount = (totalArticleCount - 1) / sizePerPage + 1;
+        int totalCommentCount = commentMapper.getTotalCommentCount(commentParameterDto.getArticleNo());
+        int totalPageCount = (totalCommentCount - 1) / sizePerPage + 1;
 
         CommentListDto commentListDto = new CommentListDto();
         commentListDto.setComments(list);
         commentListDto.setCurrentPage(currentPage);
         commentListDto.setTotalPageCount(totalPageCount);
-        System.out.println("아악 "+ commentListDto.toString());
         return commentListDto;
     }
 
