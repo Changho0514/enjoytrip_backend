@@ -54,4 +54,9 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.delete(commentNo);
     }
 
+    @Override
+    public int getArticleNo(int commentNo) throws Exception {
+        return commentMapper.getArticleNo(commentNo);
+    }
+
 }

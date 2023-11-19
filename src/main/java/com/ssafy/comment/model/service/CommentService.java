@@ -16,4 +16,5 @@ public interface CommentService {
     void modify(CommentUpdateDto commentUpdateDto) throws Exception;
     void delete(int commentNo) throws Exception;
 
+    int getArticleNo(int commentNo) throws Exception;
 }

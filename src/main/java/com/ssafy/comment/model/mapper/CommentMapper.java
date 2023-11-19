@@ -18,4 +18,6 @@ public interface CommentMapper {
     void delete(int commentNo) throws SQLException;
 
     int getTotalCommentCount(int articleNo) throws SQLException;
+
+    int getArticleNo(int commentNo) throws SQLException;
 }

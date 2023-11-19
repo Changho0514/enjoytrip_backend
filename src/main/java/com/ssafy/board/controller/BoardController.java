@@ -51,6 +51,7 @@ public class BoardController {
 		try {
 			boardDto = boardService.getBoard(articleNo);
 			if(boardDto != null) {
+				boardService.increaseHit(articleNo);
 				return new ResponseEntity<BoardDto>(boardDto, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Result>(new Result("fail", "해당 글이 없습니다"), HttpStatus.OK);

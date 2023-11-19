@@ -6,7 +6,9 @@ import java.util.Map;
 
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.BoardParameterDto;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface BoardMapper {
 	
 	BoardDto getBoard(int articleNo) throws SQLException;
@@ -16,4 +18,8 @@ public interface BoardMapper {
 	void modify(BoardDto boardDto) throws SQLException;
 	void delete(int articleNo) throws SQLException;
 
+	void increaseHit(int articleNo) throws SQLException;
+	void decreaseComment(int articleNo) throws SQLException;
+
+	void increaseComment(int articleNo) throws SQLException;
 }

@@ -40,4 +40,11 @@
         where article_no = #{articleNo}
     </select>
 
+    <select id="getArticleNo" parameterType="int" resultType="int">
+        select article_no
+        from comment
+        where comment_no = #{commentNo}
+    </select>
+
+
 </mapper>

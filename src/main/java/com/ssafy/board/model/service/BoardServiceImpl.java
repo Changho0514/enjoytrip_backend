@@ -70,4 +70,19 @@ public class BoardServiceImpl implements BoardService {
 		boardMapper.delete(articleNo);
 	}
 
+	@Override
+	public void increaseHit(int articleNo) throws Exception {
+		boardMapper.increaseHit(articleNo);
+	}
+
+	@Override
+	public void increaseComment(int articleNo) throws Exception {
+		boardMapper.increaseComment(articleNo);
+	}
+
+	@Override
+	public void decreaseComment(int articleNo) throws Exception {
+		boardMapper.decreaseComment(articleNo);
+	}
+
 }

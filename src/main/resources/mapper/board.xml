@@ -65,5 +65,22 @@
 		where article_no = #{articleNo}
 	</delete>
 
+	<update id="increaseHit" parameterType="int">
+		update board
+		set hit = hit + 1
+		where article_no = #{articleNo}
+	</update>
+
+	<update id="increaseComment" parameterType="int">
+		update board
+		set comment = comment + 1
+		where article_no = #{articleNo}
+	</update>
+
+	<update id="decreaseComment" parameterType="int">
+		update board
+		set comment = comment - 1
+		where article_no = #{articleNo}
+	</update>
 	
 </mapper>
