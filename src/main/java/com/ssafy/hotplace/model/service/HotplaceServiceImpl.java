@@ -100,8 +100,10 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 		// 핫플 누른 수가 없으면
 		if(hotplaceMapper.checkRecommendation(param) == 0){
 			hotplaceMapper.increaseRecommendationCount(hotplaceNo);
+			hotplaceMapper.insertRecommendationHotplace(param);
 		} else{
 			hotplaceMapper.decreaseRecommendationCount(hotplaceNo);
+			hotplaceMapper.deleteRecommendationHotplace(param);
 		}
 	}
 

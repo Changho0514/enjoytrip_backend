@@ -13,7 +13,6 @@ public interface BoardService {
 	void delete(int articleNo) throws Exception;
 
     void increaseHit(int articleNo) throws Exception;
-
 	void increaseComment(int articleNo) throws Exception;
 	void decreaseComment(int articleNo) throws Exception;
 
