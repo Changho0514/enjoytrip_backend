@@ -23,7 +23,7 @@ public interface HotPlaceMapper {
 	void modify(HotPlaceDto hotplaceDto) throws SQLException;
 	
 	int getRecommendCount(int hotplaceNo) throws SQLException;
-
+	
 	void increaseRecommendationCount(int hotplaceNo) throws SQLException;
 	void decreaseRecommendationCount(int hotplaceNo) throws SQLException;
 

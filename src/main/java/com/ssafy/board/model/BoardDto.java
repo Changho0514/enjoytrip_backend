@@ -25,9 +25,9 @@ public class BoardDto {
 	@NonNull
 	private String content;
 	private int hit;
-	private int recommendation;
 	private int comment;
 	private String date;
 	private int isnotice;
-
+	private double latitude;
+	private double longitude;
 }

@@ -20,16 +20,16 @@ public interface UserMapper {
 /////////////////////////////JWT 토큰/////////////////////////////////
 	int idCheck(String userId) throws SQLException;
 	void regist(UserDto userDto) throws SQLException;
-	UserDto getOutUser(String userId) throws SQLException;
-	void updateRegist(UserDto userDto) throws SQLException;
+//	UserDto getOutUser(String userId) throws SQLException;
+//	void updateRegist(UserDto userDto) throws SQLException;
 	void modify(UserDto userDto) throws SQLException;
 	void delete(String userId) throws SQLException;
 	void changePwd(UserDto userDto) throws SQLException;
 	String findPwd(String userId) throws SQLException;
-	
+	void writeFile(Map<String, Object> params) throws SQLException;
 	
 	/* Admin */
 	List<UserDto> list() throws SQLException;
 	UserDto getUser(String userId) throws SQLException;
-	
+	int isAdmin(String userId) throws SQLException;
 }

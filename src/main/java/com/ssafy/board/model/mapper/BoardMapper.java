@@ -4,9 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import com.ssafy.board.model.BoardDto;
-import com.ssafy.board.model.BoardParameterDto;
 import org.apache.ibatis.annotations.Mapper;
+
+import com.ssafy.board.model.BoardDto;
 
 @Mapper
 public interface BoardMapper {
@@ -20,6 +20,9 @@ public interface BoardMapper {
 
 	void increaseHit(int articleNo) throws SQLException;
 	void decreaseComment(int articleNo) throws SQLException;
-
 	void increaseComment(int articleNo) throws SQLException;
+	
+	List<BoardDto> userlist(String userId) throws SQLException;
+	
+	String check(int articleNo) throws SQLException;
 }

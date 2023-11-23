@@ -2,8 +2,6 @@
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.config.Result;
 import com.ssafy.mytrip.model.MytripDto;
+import com.ssafy.mytrip.model.MytripInfoDto;
 import com.ssafy.mytrip.model.service.MytripService;
 
 import io.swagger.annotations.Api;
@@ -128,5 +127,42 @@ public class MytripController {
 			return new ResponseEntity<Result>(new Result("fail", "여행 1개 삭제 실패"), HttpStatus.OK);
 		}
 	}
-
+	
+	// mytripInfo
+	@ApiOperation(value = "여행 정보 추가")
+	@PostMapping("/addMytripInfo")
+	public ResponseEntity<?> addMytripInfo(@RequestBody MytripInfoDto mytripInfoDto) {
+		try {
+			mytripService.addMytripInfo(mytripInfoDto);
+			return new ResponseEntity<Result>(new Result("success", "여행 정보 추가 성공"), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "여행 정보 추가 실패"), HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "여행 정보 가져오기")
+	@GetMapping("/getMytripInfo/{userId}/{userMytripNo}")
+	public ResponseEntity<?> getMytripInfo(@PathVariable("userId") String userId, @PathVariable("userMytripNo") int userMytripNo) {
+		try {
+			MytripInfoDto mytripInfoDto = mytripService.getMytripInfo(new MytripInfoDto(userMytripNo, userId, "", "", ""));
+			if(mytripInfoDto != null) {
+				return new ResponseEntity<MytripInfoDto>(mytripInfoDto, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Result>(new Result("success", "여행 정보가 없습니다"), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "여행 정보 가져오기 실패"), HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "여행 정보 삭제")
+	@DeleteMapping("/deleteMytripInfo/{userId}/{userMytripNo}")
+	public ResponseEntity<?> deleteMytripInfo(@PathVariable("userId") String userId, @PathVariable("userMytripNo") int userMytripNo) {
+		try {
+			mytripService.deleteMytripInfo(new MytripInfoDto(userMytripNo, userId, "", "", ""));
+			return new ResponseEntity<Result>(new Result("success", "여행 정보 삭제 성공"), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "여행 정보 삭제 실패"), HttpStatus.OK);
+		}
+	}
 }

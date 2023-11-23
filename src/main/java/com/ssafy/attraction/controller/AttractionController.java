@@ -1,7 +1,6 @@
 package com.ssafy.attraction.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.attraction.model.AttractionDescriptionDto;
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.attraction.model.GugunDto;
 import com.ssafy.attraction.model.SidoDto;
@@ -109,6 +108,18 @@ public class AttractionController {
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "해당 관광지가 없습니다"), HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value="관광지 상세정보 가져오기")
+	@GetMapping(value="/getOverview/{contentId}")
+	public ResponseEntity<?> getOverview(@PathVariable("contentId") int contentId) {
+		AttractionDescriptionDto attractionDescriptionDto;
+		try {
+			attractionDescriptionDto = attractionService.getOverview(contentId);
+			return new ResponseEntity<AttractionDescriptionDto>(attractionDescriptionDto, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "상세정보가 없습니다"), HttpStatus.OK);
 		}
 	}
 	

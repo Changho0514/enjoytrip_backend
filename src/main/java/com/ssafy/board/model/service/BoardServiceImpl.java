@@ -38,11 +38,12 @@ public class BoardServiceImpl implements BoardService {
 
 		String key = boardParameterDto.getKey();
 		param.put("key", key == null ? "" : key);
-		if ("user_id".equals(key))
-			param.put("key", key == null ? "" : "b.user_id");
+//		if ("user_id".equals(key))
+//			param.put("key", key == null ? "" : "b.user_id");
 
-
+		System.out.println("가~~~ㄴ니?"+ param);
 		List<BoardDto> list = boardMapper.list(param);
+		System.out.println("있~~~니?");
 
 		int totalArticleCount = boardMapper.getTotalArticleCount(param);
 		int totalPageCount = (totalArticleCount - 1) / sizePerPage + 1;
@@ -69,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
 	public void delete(int articleNo) throws Exception {
 		boardMapper.delete(articleNo);
 	}
-
+	
 	@Override
 	public void increaseHit(int articleNo) throws Exception {
 		boardMapper.increaseHit(articleNo);
@@ -83,6 +84,16 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public void decreaseComment(int articleNo) throws Exception {
 		boardMapper.decreaseComment(articleNo);
+	}
+
+	@Override
+	public List<BoardDto> userlist(String userId) throws Exception {
+		return boardMapper.userlist(userId);
+	}
+
+	@Override
+	public String check(int articleNo) throws Exception {
+		return boardMapper.check(articleNo);
 	}
 
 }

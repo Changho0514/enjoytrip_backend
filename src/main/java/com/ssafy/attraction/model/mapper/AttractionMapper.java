@@ -2,8 +2,6 @@ package com.ssafy.attraction.model.mapper;
 
 import java.sql.SQLException;
 
-// com.ssafy.attraction.model.mapper.AttractionMapper
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +18,5 @@ public interface AttractionMapper {
 	List<GugunDto> gugunList(int sidoCode) throws SQLException;
 	List<SidoDto> sidoList() throws SQLException;
 	AttractionInfoDto getAttraction(int contentId) throws SQLException;
+	String getOverview(int contentId) throws SQLException;
 }

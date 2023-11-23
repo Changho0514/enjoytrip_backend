@@ -11,6 +11,14 @@
 		<result column="user_id" property="userId"/>
 	</resultMap>
 	
+	<resultMap type="MytripInfoDto" id="info">
+		<result column="user_mytrip_no" property="userMytripNo"/>
+		<result column="user_id" property="userId"/>
+		<result column="start_day" property="startDay"/>
+		<result column="end_day" property="endDay"/>
+		<result column="content" property="content"/>
+	</resultMap>
+	
 	<select id="getMytripMax" parameterType="String" resultType="int">
 		select ifnull(max(user_mytrip_no),0) user_mytrip_no
 		from mytrip 
@@ -54,6 +62,24 @@
 		delete
 		from mytrip
 		where no = #{no}
+	</delete>
+	
+	<!-- mytripInfo -->
+	
+	<insert id="addMytripInfo" parameterType="MytripInfoDto">
+		insert into mytrip_info (user_mytrip_no, user_id, start_day, end_day, content)
+		values (#{userMytripNo}, #{userId}, #{startDay}, #{endDay}, #{content})
+	</insert>
+	
+	<select id="getMytripInfo" parameterType="MytripInfoDto" resultMap="info">
+		select user_mytrip_no, user_id, start_day, end_day, content
+		from mytrip_info
+		where user_mytrip_no=#{userMytripNo} and user_id=#{userId}
+	</select>
+	
+	<delete id="deleteMytripInfo" parameterType="MytripInfoDto">
+		delete from mytrip_info
+		where user_mytrip_no=#{userMytripNo} and user_id=#{userId}
 	</delete>
 
 </mapper>

@@ -4,30 +4,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.user.model.UserDto;
 import com.ssafy.user.model.mapper.UserMapper;
-
-import lombok.RequiredArgsConstructor;
+import com.ssafy.user.util.PasswordUtil;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	
-	@Autowired
 	private UserMapper userMapper;
-//	
-//	public UserServiceImpl(UserMapper userMapper) {
-//		super();
-//		this.userMapper = userMapper;
-//	}
+	
+	public UserServiceImpl(UserMapper userMapper) {
+		super();
+		this.userMapper = userMapper;
+	}
 	
 	@Override
 	public UserDto login(UserDto userDto) throws Exception {
+		String salt = PasswordUtil.generateSalt();
+		userDto.setSalt(salt);
+		userDto.setUserPwd(PasswordUtil.generateHash(userDto.getUserPwd(), salt));
 		return userMapper.login(userDto);
 	}
 
@@ -65,11 +62,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void regist(UserDto userDto) throws Exception {
-		if(userMapper.getOutUser(userDto.getUserId()) != null) { // 탈퇴했던 회원이라면
-			userMapper.updateRegist(userDto);
-		} else {
-			userMapper.regist(userDto);
-		}
+		String salt = PasswordUtil.generateSalt();
+		userDto.setSalt(salt);
+		userDto.setUserPwd(PasswordUtil.generateHash(userDto.getUserPwd(), salt));
+		userMapper.regist(userDto);
+//		if(userMapper.getOutUser(userDto.getUserId()) != null) { // 탈퇴했던 회원이라면
+//			userMapper.updateRegist(userDto);
+//		} else {
+//			userMapper.regist(userDto);
+//		}
 	}
 	
 	@Override
@@ -84,6 +85,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public void changePwd(UserDto userDto) throws Exception {
+		String salt = PasswordUtil.generateSalt();
+		userDto.setSalt(salt);
+		userDto.setUserPwd(PasswordUtil.generateHash(userDto.getUserPwd(), salt));
 		userMapper.changePwd(userDto);
 	}
 	
@@ -101,6 +105,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto getUser(String userId) throws Exception {
 		return userMapper.getUser(userId);
+	}
+
+	@Override
+	public int isAdmin(String userId) throws Exception {
+		return userMapper.isAdmin(userId);
+	}
+
+	// 프로필 업로드
+	@Override
+	public void writeFile(Map<String, Object> params) throws Exception {
+		userMapper.writeFile(params);
 	}
 
 }

@@ -20,9 +20,10 @@ public interface UserService {
 	void delete(String userId) throws Exception;
 	void changePwd(UserDto userDto) throws Exception;
 	String findPwd(String userId) throws Exception;
+	void writeFile(Map<String, Object> params) throws Exception;
 	
 	/* Admin */
 	List<UserDto> list() throws Exception;
 	UserDto getUser(String userId) throws Exception;
-	
+	int isAdmin(String userId) throws Exception;
 }

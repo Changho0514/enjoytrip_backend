@@ -1,6 +1,7 @@
 package com.ssafy.board.controller;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import com.ssafy.board.model.BoardListDto;
 import org.slf4j.Logger;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.board.model.service.BoardService;
+import com.ssafy.comment.model.CommentDto;
 import com.ssafy.config.Result;
+import com.ssafy.user.model.service.UserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,10 +41,12 @@ public class BoardController {
 	private final Logger logger = LoggerFactory.getLogger(BoardController.class);
 	
 	private BoardService boardService;
+	private UserService userService;
 
-	public BoardController(BoardService boardService) {
+	public BoardController(BoardService boardService, UserService userService) {
 		super();
 		this.boardService = boardService;
+		this.userService = userService;
 	}
 	
 	@ApiOperation(value = "글 가져오기", notes = "게시판에서 번호에 대한 글 가져오기")
@@ -65,6 +70,7 @@ public class BoardController {
 	@PostMapping("/list")
 	public ResponseEntity<?> list(@RequestBody BoardParameterDto boardParameterDto) {
 		try {
+			System.out.println("너 갈 준비했니?");
 			BoardListDto boardListDto = boardService.list(boardParameterDto);
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
@@ -80,6 +86,9 @@ public class BoardController {
 	@PostMapping("/write")
 	public ResponseEntity<?> write(@RequestBody BoardDto boardDto) {
 		try {
+			if(userService.isAdmin(boardDto.getUserId()) == 1) {
+				boardDto.setIsnotice(1);
+			}
 			boardService.write(boardDto);
 			return new ResponseEntity<Result>(new Result("success", "글등록 성공"), HttpStatus.OK);
 		} catch (Exception e) {
@@ -109,5 +118,33 @@ public class BoardController {
 		}
 	}
 	
+	@ApiOperation(value = "유저가 작성한 게시물 목록 가져오기")
+    @GetMapping("/userlist/{userId}")
+    public ResponseEntity<?> userlist(@PathVariable("userId") String userId) {
+        try {
+        	List<BoardDto> list = boardService.userlist(userId);
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+            return ResponseEntity.ok().headers(header).body(list);
+        } catch (Exception e) {
+            return new ResponseEntity<Result>(new Result("fail", "유저가 작성한 게시물 목록 가져오기 실패"), HttpStatus.OK);
+        }
+    }
+	
+	@ApiOperation(value="게시글 작성자 가져오기")
+	@GetMapping("/check/{articleNo}")
+	public ResponseEntity<?> check(@PathVariable("articleNo") int articleNo) {
+		String userId = "";
+		try {
+			userId = boardService.check(articleNo);
+			if(userId.equals("")) {
+				return new ResponseEntity<Result>(new Result("fail", "게시글 작성자가 없습니다"), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<String>(userId, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<Result>(new Result("fail", "게시글 작성자 가져오기 실패"), HttpStatus.OK);
+		}
+	}
 
 }

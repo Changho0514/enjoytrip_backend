@@ -29,4 +29,8 @@ public class UserDto {
 	private int flag;
 	private String joinDate;
 	private String refreshToken;
+	private String salt;
+	private String saveFolder;
+    private String originalFile;
+    private String saveFile;
 }

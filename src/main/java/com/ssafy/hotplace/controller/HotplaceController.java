@@ -6,9 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 
-import com.ssafy.board.model.BoardDto;
 import com.ssafy.config.Result;
 import com.ssafy.hotplace.model.*;
 import com.ssafy.hotplace.model.service.HotPlaceService;
@@ -18,8 +16,6 @@ import io.swagger.annotations.ApiOperation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
 @CrossOrigin("*")
@@ -45,14 +40,6 @@ public class HotPlaceController {
 
 	private final Logger logger = LoggerFactory.getLogger(HotPlaceController.class);
 
-	@Value("${file.path}")
-	private String uploadPath;
-
-	@Value("${file.path.upload-images}")
-	private String uploadImagePath;
-
-	@Value("${file.path.upload-files}")
-	private String uploadFilePath;
 	private ServletContext servletContext;
 	private HotPlaceService hotplaceService;
 
@@ -79,12 +66,10 @@ public class HotPlaceController {
     public ResponseEntity<?> writeFile(@RequestParam("hotplaceNo") int hotplaceNo,
                                        @RequestParam("upfile") MultipartFile file) {
         logger.debug("write hotplaceDto : {}", file);
-        HttpStatus status = null;
         try {//        FileUpload 관련 설정.
             logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
             if (!file.isEmpty()) {
                 String realPath = servletContext.getRealPath("/upload");
-//                String realPath = uploadPath;
                 String today = new SimpleDateFormat("yyMMdd").format(new Date());
                 String saveFolder = realPath + File.separator + today;
                 logger.debug("저장 폴더-------------------------- : {}", saveFolder);
@@ -116,12 +101,12 @@ public class HotPlaceController {
 	@ApiOperation(value = "파일 전체 가져오기")
 	@PostMapping("/list")
 	public ResponseEntity<?> list(@RequestBody HotPlaceParameterDto hotplaceParameterDto) {
+		System.out.println("key -> "+hotplaceParameterDto.getKey());
 		HotPlaceListDto list;
 		try {
 			list = hotplaceService.hotplaceList(hotplaceParameterDto);
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
 			return ResponseEntity.ok().headers(header).body(list);
 		} catch (Exception e) {
 			return new ResponseEntity<Result>(new Result("fail", "핫플목록 가져오기 실패"), HttpStatus.OK);
@@ -194,23 +179,36 @@ public class HotPlaceController {
 	}
 	
 	@ApiOperation(value = "추천하기")
-	@GetMapping("/recommend/{hotplaceNo}")
-	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo, String userId) throws Exception {
+	@GetMapping("/recommend/{hotplaceNo}/{userId}")
+	public ResponseEntity<?> recommend(@PathVariable("hotplaceNo") int hotplaceNo,@PathVariable("userId") String userId) throws Exception {
 		try {
 			hotplaceService.changeRecommendState(hotplaceNo, userId);
-			return new ResponseEntity<Integer>(hotplaceNo, HttpStatus.OK);
+			return new ResponseEntity<Result>(new Result("success", "추천하기 성공"), HttpStatus.OK);
+//			return new ResponseEntity<Integer>(hotplaceNo, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("핫플레이스  추천 실패 : {}", e);
-			return new ResponseEntity<Result>(new Result("fail", "추천 하기 실패"), HttpStatus.OK);
+			return new ResponseEntity<Result>(new Result("fail", "추천하기 실패"), HttpStatus.OK);
 		}
 	}
 
 	@ApiOperation(value = "나의 추천 목록 가져오기")
-	@GetMapping("/MyRecommend/{userId}")
+	@GetMapping("/myRecommendList/{userId}")
 	public ResponseEntity<?> getMyRecommendList(@PathVariable("userId") String userId) throws Exception {
 		try {
 			List<HotPlaceDto> myRecommendList = hotplaceService.getMyRecommendList(userId);
 			return new ResponseEntity<List<HotPlaceDto>>(myRecommendList, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("나의 추천 목록 가져오기 실패 : {}", e);
+			return new ResponseEntity<Result>(new Result("fail", "나의 추천 목록 가져오기 실패"), HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "내가 추천을 누른 목록 가져오기")
+	@GetMapping("/myRecommend/{userId}")
+	public ResponseEntity<?> getMyRecommend(@PathVariable("userId") String userId) throws Exception {
+		try {
+			List<Integer> list = hotplaceService.getMyRecommend(userId);
+			return new ResponseEntity<List<Integer>>(list, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("나의 추천 목록 가져오기 실패 : {}", e);
 			return new ResponseEntity<Result>(new Result("fail", "나의 추천 목록 가져오기 실패"), HttpStatus.OK);

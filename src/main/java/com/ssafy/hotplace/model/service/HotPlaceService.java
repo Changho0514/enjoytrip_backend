@@ -1,6 +1,5 @@
 package com.ssafy.hotplace.model.service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ public interface HotPlaceService {
 	void modify(HotPlaceDto hotplaceDto) throws Exception;
 	
 //	void recommend(int hotplaceNo, String userId) throws Exception;
+	List<Integer> getMyRecommend(String userId) throws Exception;
 	int getRecommendCount(int hotplaceNo) throws Exception;
 
 	void changeRecommendState(int hotplaceNo, String userId) throws Exception;

@@ -2,7 +2,6 @@ package com.ssafy.board.model;
 
 import java.util.List;
 
-import com.ssafy.hotplace.model.HotPlaceDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.attraction.model.AttractionDescriptionDto;
 import com.ssafy.attraction.model.AttractionInfoDto;
 import com.ssafy.attraction.model.GugunDto;
 import com.ssafy.attraction.model.SidoDto;
@@ -50,6 +50,12 @@ public class AttractionServiceImpl implements AttractionService {
 	@Override
 	public AttractionInfoDto getAttraction(int contentId) throws Exception {
 		return attractionMapper.getAttraction(contentId);
+	}
+
+	@Override
+	public AttractionDescriptionDto getOverview(int contentId) throws Exception {
+		String overview = attractionMapper.getOverview(contentId);
+		return new AttractionDescriptionDto(contentId, "", overview, "");
 	}
 
 }

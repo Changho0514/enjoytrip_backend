@@ -10,14 +10,15 @@
 		<result column="user_id" property="userId"/>
 		<result column="content" property="content"/>
 		<result column="hit" property="hit"/>
-		<result column="recommendation" property="recommendation"/>
 		<result column="comment" property="comment"/>
 		<result column="date" property="date"/>
 		<result column="isnotice" property="isnotice"/>
+		<result column="latitude" property="latitude"/>
+		<result column="longitude" property="longitude"/>
 	</resultMap>
 	
 	<select id="getBoard" parameterType="int" resultMap="board">
-		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
+		select article_no, subject, user_id, content, hit, comment, date, isnotice, latitude, longitude
 		from board
 		where article_no = #{articleNo}
 	</select>
@@ -34,10 +35,12 @@
 	</sql>
 	
 	<select id="list" resultMap="board" parameterType="map">
-		select article_no, subject, user_id, content, hit, recommendation, comment, date, isnotice
+		select article_no, subject, user_id, content, hit, comment, date, isnotice, latitude, longitude
 		from board
-		order by article_no desc
-		<include refid="search"></include>
+		<where>
+			<include refid="search"></include>
+		</where>
+		order by isnotice desc, article_no desc
 		limit #{start}, #{listsize}
 	</select>
 	
@@ -50,13 +53,13 @@
 	</select>
 	
 	<insert id="write" parameterType="boardDto">
-		insert into board (subject, user_id, content, date)
-		values (#{subject}, #{userId}, #{content}, now())
+		insert into board (subject, user_id, content, date, isnotice, latitude, longitude)
+		values (#{subject}, #{userId}, #{content}, now(), #{isnotice}, #{latitude}, #{longitude})
 	</insert>
 	
 	<update id="modify" parameterType="boardDto">
 		update board
-		set subject = #{subject}, content = #{content}
+		set subject = #{subject}, content = #{content}, latitude=#{latitude}, longitude=#{longitude}
 		where article_no = #{articleNo}
 	</update>
 	
@@ -64,7 +67,7 @@
 		delete from board
 		where article_no = #{articleNo}
 	</delete>
-
+	
 	<update id="increaseHit" parameterType="int">
 		update board
 		set hit = hit + 1
@@ -82,5 +85,18 @@
 		set comment = comment - 1
 		where article_no = #{articleNo}
 	</update>
+	
+	<select id="userlist" parameterType="String" resultMap="board">
+    	select *
+    	from board
+    	where user_id = #{userId}
+    </select>
+    
+    <select id="check" parameterType="int" resultType="String">
+    	select user_id
+    	from board
+    	where article_no = #{articleNo}
+    </select>
+
 	
 </mapper>

@@ -1,8 +1,9 @@
 package com.ssafy.hotplace.model.service;
 
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.ssafy.hotplace.model.HotPlaceListDto;
 import com.ssafy.hotplace.model.HotPlaceParameterDto;
@@ -48,6 +49,7 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 		param.put("key", key == null ? "" : key);
 //		if ("user_id".equals(key))
 //			param.put("key", key == null ? "" : "b.user_id");
+		System.out.println("key "+ key);
 
 		List<HotPlaceDto> list = hotplaceMapper.hotplaceList(param);
 
@@ -85,7 +87,7 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 	public void modify(HotPlaceDto hotplaceDto) throws Exception {
 		hotplaceMapper.modify(hotplaceDto);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public int getRecommendCount(int hotplaceNo) throws Exception {
@@ -105,6 +107,10 @@ public class HotPlaceServiceImpl implements HotPlaceService {
 			hotplaceMapper.decreaseRecommendationCount(hotplaceNo);
 			hotplaceMapper.deleteRecommendationHotplace(param);
 		}
+	}
+	
+	public List<Integer> getMyRecommend(String userId) throws Exception {
+		return hotplaceMapper.getMyRecommendList(userId);
 	}
 
 	@Override

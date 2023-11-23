@@ -1,20 +1,17 @@
 package com.ssafy.comment.model.service;
 
-import com.ssafy.board.model.BoardDto;
-import com.ssafy.board.model.BoardListDto;
-import com.ssafy.board.model.BoardParameterDto;
 import com.ssafy.comment.model.CommentDto;
-import com.ssafy.comment.model.CommentListDto;
-import com.ssafy.comment.model.CommentParameterDto;
-import com.ssafy.comment.model.CommentUpdateDto;
 
-import java.sql.SQLException;
+import java.util.List;
 
 public interface CommentService {
     void write(CommentDto commentDto) throws Exception;
-    CommentListDto list(CommentParameterDto commentParameterDto) throws Exception;
-    void modify(CommentUpdateDto commentUpdateDto) throws Exception;
+    List<CommentDto> list(int articleNo) throws Exception;
+    void modify(CommentDto commentDto) throws Exception;
     void delete(int commentNo) throws Exception;
+    String check(int commentNo) throws Exception;
 
     int getArticleNo(int commentNo) throws Exception;
+    
+    List<CommentDto> userlist(String userId) throws Exception;
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.mytrip.model.MytripDto;
+import com.ssafy.mytrip.model.MytripInfoDto;
 import com.ssafy.mytrip.model.mapper.MytripMapper;
 
 @Service
@@ -60,6 +61,22 @@ public class MytripServiceImpl implements MytripService {
 			mytripMapper.addMytrip(list[i]);
 		}
 		
+	}
+	
+	// mytripinfo
+	@Override
+	public void addMytripInfo(MytripInfoDto mytripInfoDto) throws Exception {
+		mytripMapper.addMytripInfo(mytripInfoDto);
+	}
+
+	@Override
+	public MytripInfoDto getMytripInfo(MytripInfoDto mytripInfoDto) throws Exception {
+		return mytripMapper.getMytripInfo(mytripInfoDto);
+	}
+
+	@Override
+	public void deleteMytripInfo(MytripInfoDto mytripInfoDto) throws Exception {
+		mytripMapper.deleteMytripInfo(mytripInfoDto);
 	}
 
 }

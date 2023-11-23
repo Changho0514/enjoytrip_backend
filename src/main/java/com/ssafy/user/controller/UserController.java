@@ -1,9 +1,13 @@
 package com.ssafy.user.controller;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -18,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.config.Result;
 import com.ssafy.user.model.UserDto;
@@ -39,11 +45,13 @@ public class UserController {
 	
 	private UserService userService;
 	private JWTUtil jwtUtil;
+	private ServletContext servletContext;
 	
-	public UserController(UserService userService, JWTUtil jwtUtil) {
+	public UserController(UserService userService, JWTUtil jwtUtil, ServletContext servletContext) {
 		super();
 		this.userService = userService;
 		this.jwtUtil = jwtUtil;
+		this.servletContext = servletContext;
 	}
 	
 	@ApiOperation(value = "로그인", notes = "아이디와 비밀번호를 이용하여 로그인 처리.")
@@ -223,6 +231,43 @@ public class UserController {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
 	}
+	
+	@ApiOperation(value = "프로필 사진 바꾸기")
+    @PostMapping("/profile")
+    public ResponseEntity<?> writeFile(@RequestParam("userId") String userId,
+                                       @RequestParam("upfile") MultipartFile file) {
+        logger.debug("upload file : {}", file);
+        try {//        FileUpload 관련 설정.
+            logger.debug("MultipartFile.isEmpty : {}", file.isEmpty());
+            if (!file.isEmpty()) {
+                String realPath = servletContext.getRealPath("/profile");
+//                String today = new SimpleDateFormat("yyMMdd").format(new Date());
+                String saveFolder = realPath + File.separator + userId;
+                logger.debug("저장 폴더-------------------------- : {}", saveFolder);
+                File folder = new File(saveFolder);
+                if (!folder.exists())
+                    folder.mkdirs();
+                String originalFileName = file.getOriginalFilename();
+                if (!originalFileName.isEmpty()) {
+                    String saveFileName = UUID.randomUUID().toString() + originalFileName.substring(originalFileName.lastIndexOf('.'));
+                    
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("userId", userId);
+                    params.put("saveFolder", userId);
+                    params.put("saveFile", saveFileName);
+                    params.put("originalFile", originalFileName);
+                    logger.debug("원본 파일 이름 : {}, 실제 저장 파일 이름 : {}", file.getOriginalFilename(), saveFileName);
+                    file.transferTo(new File(folder, saveFileName));
+                    userService.writeFile(params);
+                }
+                return new ResponseEntity<Result>(new Result("success", "파일만 프로필 write 성공"), HttpStatus.OK);
+            } else {
+            	return new ResponseEntity<Result>(new Result("fail", "파일이 없습니다"), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+        	return new ResponseEntity<Result>(new Result("fail", "파일만 프로필 write 실패"), HttpStatus.OK);
+        }
+    }
 	
 	
 }

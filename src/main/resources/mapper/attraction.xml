@@ -71,5 +71,11 @@
 		FROM attraction_info
 		WHERE content_id=#{contentId}
 	</select>
+	
+	<select id="getOverview" parameterType="int" resultType="String">
+	 	SELECT overview
+	 	FROM attraction_description
+	 	WHERE content_id=#{contentId}
+	</select>
 
 </mapper>

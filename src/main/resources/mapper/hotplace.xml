@@ -45,7 +45,10 @@
 	<select id="hotplaceList" parameterType="map" resultMap="hotplace">
 		select hotplace_no, user_id, title, content, address, recommendation, save_folder, original_file, save_file, date
 		from hotplace
-		<include refid="search"></include>
+		<where>
+			<include refid="search"></include>
+		</where>
+		order by recommendation desc, title
 		limit #{start}, #{listsize}
 	</select>
 
@@ -119,11 +122,5 @@
 		delete from recommendation_hotplace
 		where hotplace_no = #{hotplaceNo} and user_id = #{userId}
 	</delete>
-	
-	<select id="getTotalCountWithJoin" parameterType="map" resultType="int">
-		select count(hotplace_no)
-		from hotplace h, user u
-		where h.user_id =u.id
-			<include refid="search"></include>
-	</select>
+
 </mapper>
